@@ -2,12 +2,13 @@
 
 namespace App\Models;
 
+use App\Enums\PaymentMethod;
+use App\Enums\PaymentStatus;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use App\Enums\PaymentStatus;
-use App\Enums\PaymentMethod;
 
 class Payment extends Model
 {
@@ -71,6 +72,8 @@ class Payment extends Model
 
     /**
      * Scope a query to filter payments by month.
+     *
+     * @param  mixed  $query
      */
     public function scopeMonth($query, string $month)
     {
@@ -79,6 +82,8 @@ class Payment extends Model
 
     /**
      * Scope a query to filter payments by year.
+     *
+     * @param  mixed  $query
      */
     public function scopeYear($query, int $year)
     {
@@ -87,6 +92,8 @@ class Payment extends Model
 
     /**
      * Scope a query to filter payments by status.
+     *
+     * @param  mixed  $query
      */
     public function scopeStatus($query, PaymentStatus $status)
     {
@@ -112,8 +119,8 @@ class Payment extends Model
     /**
      * Get the period (month and year) as a formatted string.
      */
-    public function getPeriodAttribute(): string
+    public function period(): Attribute
     {
-        return $this->month . ' ' . $this->year;
+        return Attribute::get(get: fn () => $this->month.' '.$this->year);
     }
 }
