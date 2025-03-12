@@ -4,67 +4,76 @@ namespace App\Enums;
 
 enum PaymentStatus: string
 {
-    case Pending = 'pending';
-    case Processing = 'processing';
-    case Verified = 'verified';
-    case Rejected = 'rejected';
-    case Failed = 'failed';
+    case PENDING = 'pending';
+    case PROCESSING = 'processing';
+    case COMPLETED = 'completed';
+    case FAILED = 'failed';
+    case REFUNDED = 'refunded';
+    case VERIFIED = 'verified';
+    case REJECTED = 'rejected';
 
     /**
-     * Get all available payment statuses as an array.
+     * Get the status badge color
      *
-     * @return array<string, string>
-     */
-    public static function toArray(): array
-    {
-        return array_reduce(self::cases(), function ($carry, $case) {
-            $carry[$case->value] = self::getLabel($case);
-
-            return $carry;
-        }, []);
-    }
-
-    /**
-     * Get human-readable label for a status.
-     */
-    public static function getLabel(self $status): string
-    {
-        return match ($status) {
-            self::Pending => 'Menunggu Pengesahan',
-            self::Processing => 'Sedang Diproses',
-            self::Verified => 'Disahkan',
-            self::Rejected => 'Ditolak',
-            self::Failed => 'Gagal',
-        };
-    }
-
-    /**
-     * Get color class for the status.
+     * @return string The CSS color class
      */
     public function color(): string
     {
         return match ($this) {
-            self::Pending => 'warning',
-            self::Processing => 'info',
-            self::Verified => 'success',
-            self::Rejected => 'danger',
-            self::Failed => 'danger',
+            self::PENDING => 'yellow',
+            self::PROCESSING => 'blue',
+            self::COMPLETED => 'green',
+            self::FAILED => 'red',
+            self::REFUNDED => 'purple',
+            self::VERIFIED => 'emerald',
+            self::REJECTED => 'rose',
         };
     }
 
     /**
-     * Check if status can be changed to verified.
+     * Get the display name for the status
+     *
+     * @return string The display name
      */
-    public function canBeVerified(): bool
+    public function label(): string
     {
-        return in_array($this, [self::Pending, self::Processing]);
+        return match ($this) {
+            self::PENDING => 'Pending',
+            self::PROCESSING => 'Processing',
+            self::COMPLETED => 'Completed',
+            self::FAILED => 'Failed',
+            self::REFUNDED => 'Refunded',
+            self::VERIFIED => 'Verified',
+            self::REJECTED => 'Rejected',
+        };
     }
 
     /**
-     * Check if status can be changed to rejected.
+     * Check if status is final
+     *
+     * @return bool
      */
-    public function canBeRejected(): bool
+    public function isFinal(): bool
     {
-        return in_array($this, [self::Pending, self::Processing]);
+        return in_array($this, [
+            self::COMPLETED,
+            self::FAILED,
+            self::REFUNDED,
+            self::VERIFIED,
+            self::REJECTED,
+        ]);
+    }
+
+    /**
+     * Check if status is successful
+     *
+     * @return bool
+     */
+    public function isSuccessful(): bool
+    {
+        return in_array($this, [
+            self::COMPLETED,
+            self::VERIFIED,
+        ]);
     }
 }
