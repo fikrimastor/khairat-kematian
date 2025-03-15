@@ -4,10 +4,12 @@ namespace App\Models;
 
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
+use App\Enums\PaymentType;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Payment extends Model
@@ -23,6 +25,7 @@ class Payment extends Model
         'user_id',
         'amount',
         'payment_method',
+        'payment_type',
         'reference_no',
         'status',
         'payment_date',
@@ -31,6 +34,7 @@ class Payment extends Model
         'month',
         'year',
         'household_count',
+        'notes',
     ];
 
     /**
@@ -43,6 +47,7 @@ class Payment extends Model
         'payment_date' => 'datetime',
         'verified_at' => 'datetime',
         'payment_method' => PaymentMethod::class,
+        'payment_type' => PaymentType::class,
         'status' => PaymentStatus::class,
     ];
 
@@ -68,6 +73,14 @@ class Payment extends Model
     public function verifier(): BelongsTo
     {
         return $this->belongsTo(User::class, 'verified_by');
+    }
+
+    /**
+     * Get the payment proofs associated with the payment.
+     */
+    public function proofs(): HasMany
+    {
+        return $this->hasMany(PaymentProof::class);
     }
 
     /**
@@ -105,7 +118,7 @@ class Payment extends Model
      */
     public function isVerified(): bool
     {
-        return $this->status === PaymentStatus::Verified && $this->verified_at !== null;
+        return $this->status === PaymentStatus::VERIFIED && $this->verified_at !== null;
     }
 
     /**
@@ -113,7 +126,7 @@ class Payment extends Model
      */
     public function isPending(): bool
     {
-        return $this->status === PaymentStatus::Pending;
+        return $this->status === PaymentStatus::PENDING;
     }
 
     /**

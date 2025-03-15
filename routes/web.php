@@ -46,4 +46,10 @@ Route::prefix('payment-gateway')->name('payment.')->group(function () {
         return response()->json(['status' => 'success']);
     })->name('webhook');
 });
+
+// Test route to display the current locale
+Route::get('/locale', function () {
+    return 'Current locale: ' . app()->getLocale();
+});
+
 require __DIR__.'/auth.php';
