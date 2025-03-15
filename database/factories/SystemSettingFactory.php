@@ -22,7 +22,7 @@ class SystemSettingFactory extends Factory
             'description' => $this->faker->paragraph,
         ];
     }
-    
+
     /**
      * Configure the factory to create a fee setting.
      */
@@ -39,7 +39,7 @@ class SystemSettingFactory extends Factory
             ];
         });
     }
-    
+
     /**
      * Configure the factory to create an organization setting.
      */

@@ -31,7 +31,7 @@ return new class extends Migration
                 'phone',
                 'identification_number',
                 'is_admin',
-                'language'
+                'language',
             ]);
         });
     }

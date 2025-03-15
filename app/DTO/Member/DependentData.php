@@ -8,7 +8,7 @@ use Illuminate\Support\Carbon;
 class DependentData
 {
     public function __construct(
-        public readonly ?int $id = null,
+        public readonly ?int $id,
         public readonly int $userId,
         public readonly string $name,
         public readonly ?string $identificationNumber = null,
@@ -31,13 +31,13 @@ class DependentData
             userId: $data['user_id'],
             name: $data['name'],
             identificationNumber: $data['identification_number'] ?? null,
-            birthDate: isset($data['birth_date']) 
+            birthDate: isset($data['birth_date'])
                 ? (is_string($data['birth_date']) ? Carbon::parse($data['birth_date']) : $data['birth_date'])
                 : null,
-            relationship: isset($data['relationship']) 
+            relationship: isset($data['relationship'])
                 ? (is_string($data['relationship']) ? RelationshipType::from($data['relationship']) : $data['relationship'])
                 : null,
-            createdAt: isset($data['created_at']) 
+            createdAt: isset($data['created_at'])
                 ? (is_string($data['created_at']) ? Carbon::parse($data['created_at']) : $data['created_at'])
                 : null,
             updatedAt: isset($data['updated_at'])
@@ -64,4 +64,4 @@ class DependentData
             'updated_at' => $this->updatedAt?->toDateTimeString(),
         ];
     }
-} 
+}

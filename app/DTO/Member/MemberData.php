@@ -8,7 +8,7 @@ use Illuminate\Support\Carbon;
 class MemberData
 {
     public function __construct(
-        public readonly ?int $id = null,
+        public readonly ?int $id,
         public readonly string $name,
         public readonly string $email,
         public readonly ?string $address = null,
@@ -38,10 +38,10 @@ class MemberData
             identificationNumber: $data['identification_number'] ?? null,
             isAdmin: $data['is_admin'] ?? false,
             language: $data['language'] ?? 'ms',
-            status: isset($data['status']) 
+            status: isset($data['status'])
                 ? (is_string($data['status']) ? UserStatus::from($data['status']) : $data['status'])
                 : UserStatus::ACTIVE,
-            createdAt: isset($data['created_at']) 
+            createdAt: isset($data['created_at'])
                 ? (is_string($data['created_at']) ? Carbon::parse($data['created_at']) : $data['created_at'])
                 : null,
             updatedAt: isset($data['updated_at'])
@@ -71,4 +71,4 @@ class MemberData
             'updated_at' => $this->updatedAt?->toDateTimeString(),
         ];
     }
-} 
+}

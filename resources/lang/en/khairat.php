@@ -30,7 +30,7 @@ return [
     'error' => 'Error',
     'warning' => 'Warning',
     'info' => 'Information',
-    
+
     // Members
     'member' => 'Member',
     'members' => 'Members',
@@ -42,7 +42,7 @@ return [
     'delete_member' => 'Delete Member',
     'member_details' => 'Member Details',
     'member_since' => 'Member Since',
-    
+
     // Dependents
     'dependent' => 'Dependent',
     'dependents' => 'Dependents',
@@ -51,7 +51,7 @@ return [
     'delete_dependent' => 'Delete Dependent',
     'dependent_details' => 'Dependent Details',
     'relationship' => 'Relationship',
-    
+
     // Payments
     'payment' => 'Payment',
     'payments' => 'Payments',
@@ -75,7 +75,7 @@ return [
     'make_payment' => 'Make Payment',
     'verify_payment' => 'Verify Payment',
     'reject_payment' => 'Reject Payment',
-    
+
     // Receipts
     'receipt' => 'Receipt',
     'receipts' => 'Receipts',
@@ -83,7 +83,7 @@ return [
     'receipt_date' => 'Receipt Date',
     'download_receipt' => 'Download Receipt',
     'view_receipt' => 'View Receipt',
-    
+
     // Admin
     'admin' => 'Admin',
     'admin_dashboard' => 'Admin Dashboard',
@@ -92,13 +92,13 @@ return [
     'reports' => 'Reports',
     'generate_report' => 'Generate Report',
     'export_report' => 'Export Report',
-    
+
     // Notifications
     'notifications' => 'Notifications',
     'notification_settings' => 'Notification Settings',
     'mark_as_read' => 'Mark as Read',
     'mark_all_as_read' => 'Mark All as Read',
-    
+
     // Messages
     'payment_submitted' => 'Payment submitted successfully and awaiting verification.',
     'payment_verified' => 'Payment has been verified successfully.',
@@ -108,4 +108,4 @@ return [
     'dependent_updated' => 'Dependent updated successfully.',
     'dependent_deleted' => 'Dependent deleted successfully.',
     'settings_updated' => 'Settings updated successfully.',
-]; 
+];

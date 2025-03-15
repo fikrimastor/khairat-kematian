@@ -24,11 +24,11 @@ class PaymentProofFactory extends Factory
             'image/png' => 'png',
             'application/pdf' => 'pdf',
         };
-        
+
         return [
             'payment_id' => Payment::factory(),
-            'file_path' => 'payment_proofs/' . $this->faker->uuid . '.' . $extension,
-            'file_name' => 'payment_proof_' . $this->faker->word . '.' . $extension,
+            'file_path' => 'payment_proofs/'.$this->faker->uuid.'.'.$extension,
+            'file_name' => 'payment_proof_'.$this->faker->word.'.'.$extension,
             'file_type' => $fileType,
             'file_size' => $this->faker->numberBetween(50000, 5000000),
         ];

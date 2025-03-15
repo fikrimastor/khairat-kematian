@@ -29,7 +29,7 @@ enum RelationshipType: string
     /**
      * Get the localized display name for the relationship type
      *
-     * @param string $locale The locale to use
+     * @param  string  $locale  The locale to use
      * @return string The localized display name
      */
     public function localizedLabel(string $locale = 'ms'): string
@@ -50,17 +50,17 @@ enum RelationshipType: string
     /**
      * Get all relationship types as an array
      *
-     * @param string $locale The locale to use for labels
+     * @param  string  $locale  The locale to use for labels
      * @return array<string, string> Array of relationship types
      */
     public static function toArray(string $locale = 'ms'): array
     {
         return array_reduce(self::cases(), function ($carry, $case) use ($locale) {
-            $carry[$case->value] = $locale === 'ms' 
-                ? $case->localizedLabel() 
+            $carry[$case->value] = $locale === 'ms'
+                ? $case->localizedLabel()
                 : $case->label();
-            
+
             return $carry;
         }, []);
     }
-} 
+}

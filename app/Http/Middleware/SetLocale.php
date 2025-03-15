@@ -22,17 +22,17 @@ class SetLocale
         // Check if user is changing language
         if ($request->has('language') && in_array($request->language, ['ms', 'en'])) {
             Session::put('language', $request->language);
-            
+
             // Update user preference if logged in
             if (Auth::check()) {
                 Auth::user()->update(['language' => $request->language]);
             }
         }
-        
+
         // Set locale from session, user preference, or default to Bahasa Malaysia
         $locale = Session::get('language', Auth::check() ? Auth::user()->language : 'ms');
         App::setLocale($locale);
-        
+
         return $next($request);
     }
-} 
+}

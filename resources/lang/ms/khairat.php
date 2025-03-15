@@ -30,7 +30,7 @@ return [
     'error' => 'Ralat',
     'warning' => 'Amaran',
     'info' => 'Maklumat',
-    
+
     // Members
     'member' => 'Ahli',
     'members' => 'Ahli-ahli',
@@ -42,7 +42,7 @@ return [
     'delete_member' => 'Padam Ahli',
     'member_details' => 'Butiran Ahli',
     'member_since' => 'Ahli Sejak',
-    
+
     // Dependents
     'dependent' => 'Tanggungan',
     'dependents' => 'Tanggungan',
@@ -51,7 +51,7 @@ return [
     'delete_dependent' => 'Padam Tanggungan',
     'dependent_details' => 'Butiran Tanggungan',
     'relationship' => 'Hubungan',
-    
+
     // Payments
     'payment' => 'Pembayaran',
     'payments' => 'Pembayaran',
@@ -75,7 +75,7 @@ return [
     'make_payment' => 'Buat Pembayaran',
     'verify_payment' => 'Sahkan Pembayaran',
     'reject_payment' => 'Tolak Pembayaran',
-    
+
     // Receipts
     'receipt' => 'Resit',
     'receipts' => 'Resit',
@@ -83,7 +83,7 @@ return [
     'receipt_date' => 'Tarikh Resit',
     'download_receipt' => 'Muat Turun Resit',
     'view_receipt' => 'Lihat Resit',
-    
+
     // Admin
     'admin' => 'Pentadbir',
     'admin_dashboard' => 'Papan Pemuka Pentadbir',
@@ -92,13 +92,13 @@ return [
     'reports' => 'Laporan',
     'generate_report' => 'Jana Laporan',
     'export_report' => 'Eksport Laporan',
-    
+
     // Notifications
     'notifications' => 'Pemberitahuan',
     'notification_settings' => 'Tetapan Pemberitahuan',
     'mark_as_read' => 'Tandakan Sebagai Dibaca',
     'mark_all_as_read' => 'Tandakan Semua Sebagai Dibaca',
-    
+
     // Messages
     'payment_submitted' => 'Pembayaran berjaya dihantar dan sedang menunggu pengesahan.',
     'payment_verified' => 'Pembayaran telah disahkan dengan berjaya.',
@@ -108,4 +108,4 @@ return [
     'dependent_updated' => 'Tanggungan dikemas kini dengan berjaya.',
     'dependent_deleted' => 'Tanggungan dipadam dengan berjaya.',
     'settings_updated' => 'Tetapan dikemas kini dengan berjaya.',
-]; 
+];

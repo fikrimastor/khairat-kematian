@@ -83,4 +83,4 @@ class SystemNotification extends Notification implements ShouldQueue
             'color' => 'gray',
         ], $this->data);
     }
-} 
+}

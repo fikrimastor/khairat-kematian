@@ -77,7 +77,7 @@ class ProcessPaymentAction
                     $payment->user,
                     NotificationType::PAYMENT_CREATED,
                     [
-                        'payment' => $payment
+                        'payment' => $payment,
                     ]
                 );
 

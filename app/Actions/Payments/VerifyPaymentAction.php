@@ -88,7 +88,7 @@ class VerifyPaymentAction
                             NotificationType::PAYMENT_VERIFIED,
                             [
                                 'payment' => $payment,
-                                'receipt' => $receipt
+                                'receipt' => $receipt,
                             ]
                         );
 
@@ -105,7 +105,7 @@ class VerifyPaymentAction
                             NotificationType::PAYMENT_VERIFIED,
                             [
                                 'payment' => $payment,
-                                'receipt' => $payment->receipt
+                                'receipt' => $payment->receipt,
                             ]
                         );
 
@@ -123,7 +123,7 @@ class VerifyPaymentAction
                         $payment->user,
                         NotificationType::PAYMENT_REJECTED,
                         [
-                            'payment' => $payment
+                            'payment' => $payment,
                         ]
                     );
 

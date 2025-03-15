@@ -11,7 +11,9 @@ class NotificationList extends Component
     use WithPagination;
 
     public $unreadOnly = false;
+
     public $limit = 5;
+
     public $showAll = false;
 
     public function mount($limit = 5, $unreadOnly = false)
@@ -47,16 +49,16 @@ class NotificationList extends Component
         } else {
             $notifications = Auth::user()->notifications;
         }
-        
+
         if (!$this->showAll) {
             $notifications = $notifications->take($this->limit);
         }
 
         $unreadCount = Auth::user()->unreadNotifications->count();
-        
+
         return view('livewire.notifications.notification-list', [
             'notifications' => $notifications,
             'unreadCount' => $unreadCount,
         ]);
     }
-} 
+}

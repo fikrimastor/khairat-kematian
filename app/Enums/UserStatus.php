@@ -27,7 +27,7 @@ enum UserStatus: string
     /**
      * Get the localized display name for the user status
      *
-     * @param string $locale The locale to use
+     * @param  string  $locale  The locale to use
      * @return string The localized display name
      */
     public function localizedLabel(string $locale = 'ms'): string
@@ -68,4 +68,4 @@ enum UserStatus: string
     {
         return $this === self::ACTIVE;
     }
-} 
+}

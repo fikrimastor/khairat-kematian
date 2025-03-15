@@ -46,7 +46,7 @@ class PaymentRejectedNotification extends Notification implements ShouldQueue
             ->subject(__('Payment Rejected'))
             ->greeting(__('Hello :name', ['name' => $notifiable->name]))
             ->line(__('Unfortunately, your payment of :amount for :type has been rejected.', [
-                'amount' => 'RM ' . number_format($this->payment->amount, 2),
+                'amount' => 'RM '.number_format($this->payment->amount, 2),
                 'type' => __($this->payment->payment_type),
             ]));
 
@@ -77,4 +77,4 @@ class PaymentRejectedNotification extends Notification implements ShouldQueue
             'color' => 'red',
         ];
     }
-} 
+}

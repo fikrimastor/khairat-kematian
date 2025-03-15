@@ -106,4 +106,4 @@ return [
     */
 
     'attributes' => [],
-]; 
+];

@@ -68,4 +68,4 @@ class DependentAddedNotification extends Notification implements ShouldQueue
             'color' => 'indigo',
         ];
     }
-} 
+}

@@ -55,11 +55,11 @@ class PaymentVerifiedNotification extends Notification implements ShouldQueue
             ->subject(__('Payment Verified'))
             ->greeting(__('Hello :name', ['name' => $notifiable->name]))
             ->line(__('Your payment of :amount for :type has been verified.', [
-                'amount' => 'RM ' . number_format($this->payment->amount, 2),
+                'amount' => 'RM '.number_format($this->payment->amount, 2),
                 'type' => __($this->payment->payment_type),
             ]))
             ->line(__('Receipt Number: :receipt', ['receipt' => $this->receipt->receipt_number]))
-            ->action(__('View Receipt'), url('/receipts/' . $this->receipt->id))
+            ->action(__('View Receipt'), url('/receipts/'.$this->receipt->id))
             ->line(__('Thank you for your payment!'));
     }
 
@@ -80,4 +80,4 @@ class PaymentVerifiedNotification extends Notification implements ShouldQueue
             'color' => 'green',
         ];
     }
-} 
+}

@@ -20,9 +20,9 @@ class NotificationHelper
     /**
      * Send a notification based on the notification type
      *
-     * @param User $user The user to notify
-     * @param NotificationType $type The type of notification
-     * @param array $data Additional data for the notification
+     * @param  User  $user  The user to notify
+     * @param  NotificationType  $type  The type of notification
+     * @param  array  $data  Additional data for the notification
      * @return bool Whether the notification was sent successfully
      */
     public static function notify(User $user, NotificationType $type, array $data = []): bool
@@ -54,7 +54,7 @@ class NotificationHelper
                     break;
 
                 case NotificationType::MEMBER_REGISTERED:
-                    $user->notify(new MemberRegisteredNotification());
+                    $user->notify(new MemberRegisteredNotification);
                     break;
 
                 case NotificationType::DEPENDENT_ADDED:
@@ -90,9 +90,9 @@ class NotificationHelper
     /**
      * Send a notification to multiple users
      *
-     * @param array $users The users to notify
-     * @param NotificationType $type The type of notification
-     * @param array $data Additional data for the notification
+     * @param  array  $users  The users to notify
+     * @param  NotificationType  $type  The type of notification
+     * @param  array  $data  Additional data for the notification
      * @return array Results of sending to each user
      */
     public static function notifyMany(array $users, NotificationType $type, array $data = []): array
@@ -105,4 +105,4 @@ class NotificationHelper
 
         return $results;
     }
-} 
+}

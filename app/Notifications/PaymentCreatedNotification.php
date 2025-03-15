@@ -46,12 +46,12 @@ class PaymentCreatedNotification extends Notification implements ShouldQueue
             ->subject(__('Payment Received'))
             ->greeting(__('Hello :name', ['name' => $notifiable->name]))
             ->line(__('We have received your payment of :amount for :type.', [
-                'amount' => 'RM ' . number_format($this->payment->amount, 2),
+                'amount' => 'RM '.number_format($this->payment->amount, 2),
                 'type' => __($this->payment->payment_type),
             ]))
             ->line(__('Your payment is now being processed and will be verified by our team.'))
             ->line(__('Payment Reference: :reference', ['reference' => $this->payment->reference_no ?? $this->payment->id]))
-            ->action(__('View Payment Details'), url('/payments/' . $this->payment->id))
+            ->action(__('View Payment Details'), url('/payments/'.$this->payment->id))
             ->line(__('Thank you for using our application!'));
     }
 
@@ -73,4 +73,4 @@ class PaymentCreatedNotification extends Notification implements ShouldQueue
             'color' => 'blue',
         ];
     }
-} 
+}
