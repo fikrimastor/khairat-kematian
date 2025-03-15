@@ -2,8 +2,10 @@
 
 namespace App\Actions\Payments;
 
+use App\Enums\NotificationType;
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
+use App\Helpers\NotificationHelper;
 use App\Models\Payment;
 use App\Services\Payment\Factories\PaymentGatewayFactory;
 use Illuminate\Support\Facades\Log;
@@ -69,6 +71,15 @@ class ProcessPaymentAction
                     'gateway' => $gatewayType,
                     'status' => $result['status'],
                 ]);
+
+                // Send notification to user
+                NotificationHelper::notify(
+                    $payment->user,
+                    NotificationType::PAYMENT_CREATED,
+                    [
+                        'payment' => $payment,
+                    ]
+                );
 
                 // For online payment, return payment URL
                 if ($payment->payment_method === PaymentMethod::ChipInAsia) {

@@ -2,7 +2,9 @@
 
 namespace App\Actions\Payments;
 
+use App\Enums\NotificationType;
 use App\Enums\PaymentStatus;
+use App\Helpers\NotificationHelper;
 use App\Models\Payment;
 use App\Models\Receipt;
 use Illuminate\Support\Facades\DB;
@@ -80,6 +82,16 @@ class VerifyPaymentAction
                             'receipt_number' => $receipt->receipt_number,
                         ]);
 
+                        // Send notification to user
+                        NotificationHelper::notify(
+                            $payment->user,
+                            NotificationType::PAYMENT_VERIFIED,
+                            [
+                                'payment' => $payment,
+                                'receipt' => $receipt,
+                            ]
+                        );
+
                         return [
                             'success' => true,
                             'message' => 'Payment verified and receipt generated',
@@ -87,6 +99,16 @@ class VerifyPaymentAction
                             'receipt_number' => $receipt->receipt_number,
                         ];
                     } else {
+                        // Send notification to user
+                        NotificationHelper::notify(
+                            $payment->user,
+                            NotificationType::PAYMENT_VERIFIED,
+                            [
+                                'payment' => $payment,
+                                'receipt' => $payment->receipt,
+                            ]
+                        );
+
                         return [
                             'success' => true,
                             'message' => 'Payment verified, receipt already exists',
@@ -96,6 +118,15 @@ class VerifyPaymentAction
                     }
                 } else {
                     // Payment was rejected
+                    // Send notification to user
+                    NotificationHelper::notify(
+                        $payment->user,
+                        NotificationType::PAYMENT_REJECTED,
+                        [
+                            'payment' => $payment,
+                        ]
+                    );
+
                     return [
                         'success' => true,
                         'message' => 'Payment rejected',
