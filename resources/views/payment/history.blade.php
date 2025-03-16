@@ -7,7 +7,7 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <livewire:payment.payment-history />
+            <livewire:payment.payment-list :viewMode="'history'" />
         </div>
     </div>
 </x-app-layout> 
