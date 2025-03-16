@@ -16,7 +16,8 @@ class PaymentController extends Controller
      */
     public function index()
     {
-        return view('payment.index');
+        // Return the view that contains our Livewire component
+        return view('payment.history');
     }
 
     /**
