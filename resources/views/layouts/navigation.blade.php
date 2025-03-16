@@ -15,6 +15,12 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+                    
+                    @if(Auth::user()->is_admin)
+                    <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
+                        {{ __('Admin Dashboard') }}
+                    </x-nav-link>
+                    @endif
                 </div>
                 
                 <!-- Member Section -->
@@ -139,6 +145,12 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+            
+            @if(Auth::user()->is_admin)
+            <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
+                {{ __('Admin Dashboard') }}
+            </x-responsive-nav-link>
+            @endif
             
             <x-responsive-nav-link :href="route('member.show')" :active="request()->routeIs('member.show')">
                 {{ __('My Profile') }}
