@@ -10,15 +10,15 @@ class UpdateMemberAction
     /**
      * Update a member's profile.
      *
-     * @param int $userId The user ID
-     * @param array $data The updated member data
+     * @param  int  $userId  The user ID
+     * @param  array  $data  The updated member data
      * @return User The updated user
      */
     public function execute(int $userId, array $data): User
     {
         return DB::transaction(function () use ($userId, $data) {
             $user = User::findOrFail($userId);
-            
+
             // Update the user record
             $user->update([
                 'name' => $data['name'],
@@ -28,11 +28,11 @@ class UpdateMemberAction
                 'identification_number' => $data['identification_number'] ?? $user->identification_number,
                 'language' => $data['language'] ?? $user->language,
             ]);
-            
+
             // Dispatch event if needed
             // MemberUpdated::dispatch($user);
-            
+
             return $user;
         });
     }
-} 
+}

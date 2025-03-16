@@ -35,6 +35,14 @@ enum PaymentMethod: string
     }
 
     /**
+     * Get label for the payment method.
+     */
+    public function label(): string
+    {
+        return self::getLabel($this);
+    }
+
+    /**
      * Check if the payment method requires receipt upload.
      */
     public function requiresReceipt(): bool

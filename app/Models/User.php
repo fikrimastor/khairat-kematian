@@ -28,6 +28,10 @@ class User extends Authenticatable
         'identification_number',
         'is_admin',
         'language',
+        'is_active',
+        'membership_expires_at',
+        'membership_type',
+        'last_payment_date',
     ];
 
     /**
@@ -51,6 +55,9 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
+            'is_active' => 'boolean',
+            'membership_expires_at' => 'date',
+            'last_payment_date' => 'date',
         ];
     }
 
@@ -71,5 +78,65 @@ class User extends Authenticatable
     public function dependents()
     {
         return $this->hasMany(Dependent::class);
+    }
+
+    /**
+     * Check if the user's membership is active
+     */
+    public function isActive(): bool
+    {
+        return $this->is_active && $this->membership_expires_at && $this->membership_expires_at->isFuture();
+    }
+
+    /**
+     * Check if the user's membership has expired
+     */
+    public function isMembershipExpired(): bool
+    {
+        return $this->membership_expires_at && $this->membership_expires_at->isPast();
+    }
+
+    /**
+     * Calculate the amount to pay based on user status
+     */
+    public function calculatePaymentAmount(): float
+    {
+        // If new registration or expired membership - RM 50
+        if (!$this->is_active || $this->isMembershipExpired()) {
+            return config('khairat.registration_fee', 50);
+        }
+
+        // If renewal - RM 40
+        return config('khairat.renewal_fee', 40);
+    }
+
+    /**
+     * Get payment type based on user status
+     */
+    public function getPaymentType(): string
+    {
+        if (!$this->is_active || $this->isMembershipExpired()) {
+            return 'registration';
+        }
+
+        return 'renewal';
+    }
+
+    /**
+     * Activate membership after successful payment
+     */
+    public function activateMembership(string $paymentType): void
+    {
+        $this->is_active = true;
+        $this->last_payment_date = now();
+
+        // Set expiry date - 1 year from today or from current expiry if renewal
+        if ($paymentType === 'renewal' && $this->membership_expires_at && $this->membership_expires_at->isFuture()) {
+            $this->membership_expires_at = $this->membership_expires_at->addYear();
+        } else {
+            $this->membership_expires_at = now()->addYear();
+        }
+
+        $this->save();
     }
 }

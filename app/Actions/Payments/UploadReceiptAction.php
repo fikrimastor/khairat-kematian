@@ -4,9 +4,9 @@ namespace App\Actions\Payments;
 
 use App\Enums\PaymentMethod;
 use App\Models\Payment;
+use App\Models\PaymentProof;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class UploadReceiptAction
@@ -38,14 +38,19 @@ class UploadReceiptAction
             }
 
             // Generate filename
-            $filename = 'receipts/uploads/'.$payment->id.'-'.Str::random(10).'.'.$file->extension();
+            $filename = 'payment_'.$payment->id.'_'.Str::random(10).'.'.$file->extension();
 
             // Store file
-            $path = Storage::disk('public')->putFileAs(
-                'receipts/uploads',
-                $file,
-                $payment->id.'-'.Str::random(10).'.'.$file->extension()
-            );
+            $path = $file->storeAs('receipts/uploads', $filename, 'public');
+
+            // Create payment proof record
+            PaymentProof::create([
+                'payment_id' => $payment->id,
+                'file_path' => $path,
+                'file_name' => $file->getClientOriginalName(),
+                'file_type' => $file->getMimeType(),
+                'file_size' => $file->getSize(),
+            ]);
 
             // Update payment with receipt information
             $payment->update([

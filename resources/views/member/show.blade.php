@@ -50,7 +50,9 @@
                     </div>
                     <div>
                         <div class="text-sm font-medium text-gray-500">{{ __('Account Status') }}</div>
-                        <div class="text-xl font-semibold text-green-600">{{ __('Active') }}</div>
+                        <div class="text-xl font-semibold {{ $user->isActive() ? 'text-green-600' : 'text-red-600' }}">
+                            {{ $user->isActive() ? __('Active') : __('Inactive') }}
+                        </div>
                     </div>
                 </div>
 
@@ -135,6 +137,9 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Membership Information -->
+            @include('member.partials.membership-information')
 
             <!-- Family Members -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">

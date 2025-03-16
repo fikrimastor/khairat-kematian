@@ -20,11 +20,11 @@ class PaymentGatewayFactory
     public function make(string $gateway): PaymentGatewayInterface
     {
         return match ($gateway) {
-            'chipinasia' => new ChipInAsiaGateway(
-                config('services.chipinasia.key'),
-                config('services.chipinasia.secret')
+            'chipinasia', 'chipin' => new ChipInAsiaGateway(
+                config('services.chipinasia.key') ?? config('services.chipin.api_key'),
+                config('services.chipinasia.secret') ?? config('services.chipin.api_secret')
             ),
-            'banktransfer' => new BankTransferGateway,
+            'banktransfer', 'bank_transfer' => new BankTransferGateway,
             default => throw new InvalidArgumentException("Unsupported payment gateway: {$gateway}")
         };
     }

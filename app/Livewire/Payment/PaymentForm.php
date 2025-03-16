@@ -1,187 +1,161 @@
 <?php
 
-namespace App\Http\Livewire\Payment;
+namespace App\Livewire\Payment;
 
-use App\Actions\Payments\CreatePaymentAction;
-use App\Actions\Payments\ProcessPaymentAction;
-use App\Actions\Payments\UploadReceiptAction;
-use App\Actions\Payments\ValidatePaymentAction;
 use App\Enums\PaymentMethod;
+use App\Enums\PaymentStatus;
+use App\Enums\PaymentType;
 use App\Models\Payment;
+use App\Services\Payment\Factories\PaymentGatewayFactory;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
-use Livewire\WithFileUploads;
 
 class PaymentForm extends Component
 {
-    use WithFileUploads;
+    public $paymentType = '';
 
-    public $amount = 20.00;
+    public $paymentMethod = '';
 
-    public $paymentMethod = 'bank_transfer';
+    public $amount = 0;
 
-    public $month;
+    public $reference = '';
 
-    public $year;
+    public $calculatedAmount = 0;
 
-    public $householdCount = 1;
+    public $isAmountReadOnly = true;
 
-    public $notes;
+    public $showSummary = false;
 
-    public $receiptImage;
+    public $showProcessingModal = false;
 
-    // For online payment
-    public $paymentUrl;
-
-    public $showPaymentRedirect = false;
-
-    // For bank transfer
-    public $bankDetails;
-
-    public $showBankDetails = false;
-
-    protected $listeners = [
-        'refreshPaymentForm' => '$refresh',
-    ];
-
-    /**
-     * Component mount method.
-     */
     public function mount()
     {
-        // Set default month and year
-        $this->month = now()->format('F');
-        $this->year = now()->year;
+        $user = Auth::user();
+
+        // Set default payment type based on user's membership status
+        $this->paymentType = $user->getPaymentType();
+
+        // Calculate amount based on user's membership status
+        $this->calculatedAmount = $user->calculatePaymentAmount();
+        $this->amount = $this->calculatedAmount;
+
+        // Show summary
+        $this->updateSummary();
     }
 
-    /**
-     * Calculate the amount based on household count.
-     */
-    public function updatedHouseholdCount()
+    public function updatedPaymentType()
     {
-        $this->amount = $this->householdCount * 20.00;
+        $user = Auth::user();
+
+        // Set amount based on payment type
+        if ($this->paymentType === PaymentType::REGISTRATION->value) {
+            $this->calculatedAmount = config('khairat.registration_fee', 50);
+        } elseif ($this->paymentType === PaymentType::RENEWAL->value) {
+            $this->calculatedAmount = config('khairat.renewal_fee', 40);
+        } else {
+            $this->calculatedAmount = 0;
+        }
+
+        $this->amount = $this->calculatedAmount;
+        $this->updateSummary();
     }
 
-    /**
-     * Process the payment form submission.
-     */
-    public function submitPayment(
-        CreatePaymentAction $createPaymentAction,
-        ProcessPaymentAction $processPaymentAction,
-        UploadReceiptAction $uploadReceiptAction,
-        ValidatePaymentAction $validatePaymentAction
-    ) {
+    public function updatedPaymentMethod()
+    {
+        $this->updateSummary();
+    }
+
+    public function updatedAmount()
+    {
+        $this->updateSummary();
+    }
+
+    private function updateSummary()
+    {
+        $this->showSummary = !empty($this->paymentType) && !empty($this->paymentMethod) && $this->amount > 0;
+    }
+
+    public function save()
+    {
+        $this->validate([
+            'paymentType' => 'required|string|in:'.implode(',', array_column(PaymentType::cases(), 'value')),
+            'paymentMethod' => 'required|string|in:'.implode(',', array_column(PaymentMethod::cases(), 'value')),
+            'amount' => 'required|numeric|min:1',
+            'reference' => 'nullable|string|max:255',
+        ]);
+
+        $this->showProcessingModal = true;
+
         try {
-            // Validate form data
-            $validated = $validatePaymentAction->execute([
-                'user_id' => Auth::id(),
-                'amount' => $this->amount,
-                'payment_method' => $this->paymentMethod,
-                'month' => $this->month,
-                'year' => $this->year,
-                'household_count' => $this->householdCount,
-                'notes' => $this->notes,
-                'receipt_image' => $this->receiptImage,
-            ]);
+            $user = Auth::user();
+            $dependentCount = $user->dependents()->count();
 
             // Create payment record
-            $payment = $createPaymentAction->execute([
-                'user_id' => Auth::id(),
+            $payment = Payment::create([
+                'user_id' => $user->id,
                 'amount' => $this->amount,
                 'payment_method' => $this->paymentMethod,
-                'month' => $this->month,
-                'year' => $this->year,
-                'household_count' => $this->householdCount,
-                'notes' => $this->notes,
+                'payment_type' => $this->paymentType,
+                'reference_id' => 'PAY-'.time().'-'.$user->id,
+                'status' => PaymentStatus::PENDING,
+                'month' => date('F'),
+                'year' => date('Y'),
+                'household_count' => $dependentCount + 1, // User + dependents
+                'notes' => $this->reference,
             ]);
 
-            if (!$payment) {
-                $this->dispatch('show-error', [
-                    'message' => 'Failed to create payment record.',
+            // Process payment through gateway if needed
+            if ($this->paymentMethod === PaymentMethod::ChipInAsia->value) {
+                $gatewayFactory = new PaymentGatewayFactory;
+                $gateway = $gatewayFactory->make('chipin');
+
+                $result = $gateway->processPayment([
+                    'amount' => $this->amount,
+                    'reference' => $payment->reference_id,
+                    'user_id' => $user->id,
+                    'user_name' => $user->name,
+                    'user_email' => $user->email,
                 ]);
 
-                return;
-            }
-
-            // If payment method is bank transfer, handle receipt upload
-            if ($this->paymentMethod === PaymentMethod::BankTransfer->value && $this->receiptImage) {
-                $uploadResult = $uploadReceiptAction->execute($payment, $this->receiptImage);
-
-                if (!$uploadResult['success']) {
-                    $this->dispatch('show-error', [
-                        'message' => $uploadResult['message'],
+                if ($result['success']) {
+                    $payment->update([
+                        'reference_id' => $result['transaction_id'],
+                        'status' => PaymentStatus::PROCESSING,
                     ]);
 
-                    return;
+                    $this->showProcessingModal = false;
+
+                    // Redirect to payment gateway
+                    return redirect()->to($result['redirect_url']);
+                } else {
+                    throw new \Exception($result['error'] ?? 'Failed to process payment');
                 }
-            }
-
-            // Process payment based on method
-            $processResult = $processPaymentAction->execute($payment, [
-                'customer_name' => Auth::user()->name,
-                'customer_email' => Auth::user()->email,
-                'redirect_url' => route('payment.callback', ['payment_id' => $payment->id]),
-                'webhook_url' => route('payment.webhook'),
-            ]);
-
-            if (!$processResult['success']) {
-                $this->dispatch('show-error', [
-                    'message' => $processResult['message'],
+            } else {
+                // For non-gateway payments, update the payment status
+                $payment->update([
+                    'status' => PaymentStatus::PENDING->value,
                 ]);
 
-                return;
+                $this->showProcessingModal = false;
+
+                return redirect()->route('payments.show', $payment)->with('success', 'Pembayaran telah direkodkan. Sila tunggu untuk pengesahan.');
             }
-
-            // Handle payment method specific logic
-            if ($this->paymentMethod === PaymentMethod::ChipInAsia->value) {
-                // For online payment, redirect to payment URL
-                $this->paymentUrl = $processResult['payment_url'];
-                $this->showPaymentRedirect = true;
-            } elseif ($this->paymentMethod === PaymentMethod::BankTransfer->value) {
-                // For bank transfer, show bank details
-                $this->bankDetails = $processResult['bank_details'];
-                $this->showBankDetails = true;
-            }
-
-            // Reset form
-            $this->reset(['receiptImage', 'notes']);
-
-            $this->dispatch('show-success', [
-                'message' => 'Payment submitted successfully.',
-            ]);
-
-            // Emit event to refresh payment list
-            $this->emit('paymentCreated');
-
         } catch (\Exception $e) {
-            $this->dispatch('show-error', [
-                'message' => 'Error: '.$e->getMessage(),
-            ]);
+            $this->showProcessingModal = false;
+            $this->addError('payment', 'Failed to process payment: '.$e->getMessage());
         }
     }
 
-    /**
-     * Get available payment methods.
-     */
-    public function getPaymentMethodsProperty()
+    public function cancel()
     {
-        return PaymentMethod::toArray();
+        return redirect()->route('payments.index');
     }
 
-    /**
-     * Close modals.
-     */
-    public function closeModals()
-    {
-        $this->showPaymentRedirect = false;
-        $this->showBankDetails = false;
-    }
-
-    /**
-     * Render the component.
-     */
     public function render()
     {
-        return view('livewire.payment.payment-form');
+        return view('livewire.payment.payment-form', [
+            'paymentTypes' => PaymentType::toArray(),
+            'paymentMethods' => PaymentMethod::toArray(),
+        ]);
     }
 }

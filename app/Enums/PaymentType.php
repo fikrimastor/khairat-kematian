@@ -15,21 +15,22 @@ enum PaymentType: string
     public function label(): string
     {
         return match ($this) {
-            self::REGISTRATION => 'Registration',
-            self::RENEWAL => 'Renewal',
+            self::REGISTRATION => 'Yuran Pendaftaran',
+            self::RENEWAL => 'Yuran Pembaharuan',
         };
     }
 
     /**
-     * Get the description for the payment type
+     * Get all payment types as an array
      *
-     * @return string The description
+     * @return array<string, string>
      */
-    public function description(): string
+    public static function toArray(): array
     {
-        return match ($this) {
-            self::REGISTRATION => 'Initial registration fee',
-            self::RENEWAL => 'Annual renewal fee',
-        };
+        return array_reduce(self::cases(), function ($carry, $case) {
+            $carry[$case->value] = $case->label();
+
+            return $carry;
+        }, []);
     }
 }

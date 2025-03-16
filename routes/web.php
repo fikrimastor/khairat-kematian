@@ -1,8 +1,10 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Member\MemberController;
 use App\Http\Controllers\Member\DependentController;
+use App\Http\Controllers\Member\MemberController;
+use App\Http\Controllers\Payment\PaymentController;
+use App\Http\Controllers\Payment\PaymentGatewayController;
+use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -17,36 +19,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
-
-// Payment Routes
-// Route::middleware(['auth', 'verified'])->prefix('payments')->name('payments.')->group(function () {
-Route::group([
-    'middleware' => ['auth', 'verified'],
-    'prefix' => 'payments',
-    'as' => 'payments.',
-    'controller' => App\Http\Controllers\Payment\PaymentController::class,
-], function () {
-    Route::get('/', 'index')->name('index');
-    Route::get('/create', 'create')->name('create');
-    Route::get('/{payment}', 'show')->name('show');
-    Route::post('/{payment}/verify', 'verify')
-        ->middleware('permission:payment.verify')
-        ->name('verify');
-    Route::get('/{payment}/receipt', 'downloadReceipt')
-        ->name('download-receipt');
-});
-
-// Payment Gateway Callback Routes
-Route::prefix('payment-gateway')->name('payment.')->group(function () {
-    Route::get('/callback', function () {
-        return redirect()->route('payments.index')->with('success', __('Payment completed. Your payment is being processed.'));
-    })->name('callback');
-
-    Route::post('/webhook', function () {
-        // This would normally be handled by a dedicated controller
-        return response()->json(['status' => 'success']);
-    })->name('webhook');
 });
 
 // Test route to display the current locale
@@ -71,6 +43,21 @@ Route::middleware(['auth', 'verified'])->prefix('dependent')->name('dependent.')
     Route::get('/{dependent}/edit', [DependentController::class, 'edit'])->name('edit');
     Route::patch('/{dependent}', [DependentController::class, 'update'])->name('update');
     Route::delete('/{dependent}', [DependentController::class, 'destroy'])->name('destroy');
+});
+
+// Payment Routes
+Route::middleware(['auth', 'verified'])->prefix('payments')->name('payments.')->group(function () {
+    Route::get('/', [PaymentController::class, 'index'])->name('index');
+    Route::get('/create', [PaymentController::class, 'create'])->name('create');
+    Route::get('/{payment}', [PaymentController::class, 'show'])->name('show');
+    Route::post('/{payment}/verify', [PaymentController::class, 'verify'])->name('verify');
+    Route::get('/{payment}/receipt', [PaymentController::class, 'downloadReceipt'])->name('receipt');
+});
+
+// Payment Gateway Callback Routes
+Route::prefix('payment-gateway')->name('payment-gateway.')->group(function () {
+    Route::get('/callback', [PaymentGatewayController::class, 'handleCallback'])->name('callback');
+    Route::post('/webhook', [PaymentGatewayController::class, 'handleWebhook'])->name('webhook');
 });
 
 // Registration Page - This uses the Livewire component

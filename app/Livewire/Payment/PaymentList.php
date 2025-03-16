@@ -1,9 +1,7 @@
 <?php
 
-namespace App\Http\Livewire\Payment;
+namespace App\Livewire\Payment;
 
-use App\Enums\PaymentMethod;
-use App\Enums\PaymentStatus;
 use App\Models\Payment;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
@@ -13,156 +11,91 @@ class PaymentList extends Component
 {
     use WithPagination;
 
-    public $search = '';
+    public $showUploadModal = false;
 
-    public $statusFilter = '';
+    public $selectedPaymentId;
 
-    public $methodFilter = '';
+    public $receiptFile;
 
-    public $yearFilter = '';
-
-    public $monthFilter = '';
-
-    public $perPage = 10;
-
-    public $sortField = 'created_at';
-
-    public $sortDirection = 'desc';
-
-    public $isAdmin;
-
-    protected $queryString = [
-        'search' => ['except' => ''],
-        'statusFilter' => ['except' => ''],
-        'methodFilter' => ['except' => ''],
-        'yearFilter' => ['except' => ''],
-        'monthFilter' => ['except' => ''],
-        'sortField' => ['except' => 'created_at'],
-        'sortDirection' => ['except' => 'desc'],
-    ];
+    public $receiptNotes;
 
     protected $listeners = [
-        'paymentCreated' => '$refresh',
-        'paymentStatusUpdated' => '$refresh',
+        'payment-filter-applied' => '$refresh',
+        'receipt-uploaded' => '$refresh',
     ];
 
-    /**
-     * Component mount method.
-     */
-    public function mount()
+    public function uploadReceipt($paymentId)
     {
-        $this->isAdmin = Auth::user()->hasRole(['Super Admin', 'Administrator', 'Treasurer']);
+        $this->selectedPaymentId = $paymentId;
+        $this->showUploadModal = true;
+    }
 
-        // Set default year filter to current year
-        if (empty($this->yearFilter)) {
-            $this->yearFilter = now()->year;
+    public function closeUploadModal()
+    {
+        $this->showUploadModal = false;
+        $this->reset(['selectedPaymentId', 'receiptFile', 'receiptNotes']);
+    }
+
+    public function submitReceipt()
+    {
+        $this->validate([
+            'receiptFile' => 'required|file|max:2048|mimes:jpg,jpeg,png,pdf',
+            'receiptNotes' => 'nullable|string|max:255',
+        ]);
+
+        $payment = Payment::findOrFail($this->selectedPaymentId);
+
+        // Ensure the user can only upload receipts for their own payments
+        if ($payment->user_id !== Auth::id()) {
+            $this->addError('receiptFile', 'You are not authorized to upload a receipt for this payment.');
+
+            return;
+        }
+
+        try {
+            app(\App\Actions\Payment\UploadReceiptAction::class)->execute(
+                $payment,
+                $this->receiptFile,
+                $this->receiptNotes
+            );
+
+            $this->showUploadModal = false;
+            $this->reset(['selectedPaymentId', 'receiptFile', 'receiptNotes']);
+
+            $this->dispatch('notify', [
+                'type' => 'success',
+                'message' => __('Receipt uploaded successfully. Your payment is pending verification.'),
+            ]);
+        } catch (\Exception $e) {
+            $this->addError('receiptFile', 'Failed to upload receipt: '.$e->getMessage());
         }
     }
 
-    /**
-     * Sort results by the given field.
-     *
-     * @param  mixed  $field
-     */
-    public function sortBy($field)
-    {
-        if ($this->sortField === $field) {
-            $this->sortDirection = $this->sortDirection === 'asc' ? 'desc' : 'asc';
-        } else {
-            $this->sortField = $field;
-            $this->sortDirection = 'asc';
-        }
-    }
-
-    /**
-     * Reset all filters.
-     */
-    public function resetFilters()
-    {
-        $this->reset(['search', 'statusFilter', 'methodFilter', 'monthFilter']);
-        $this->yearFilter = now()->year;
-    }
-
-    /**
-     * Get list of available months.
-     */
-    public function getMonthsProperty()
-    {
-        return [
-            'January', 'February', 'March', 'April', 'May', 'June',
-            'July', 'August', 'September', 'October', 'November', 'December',
-        ];
-    }
-
-    /**
-     * Get list of available years.
-     */
-    public function getYearsProperty()
-    {
-        $currentYear = now()->year;
-
-        return range($currentYear - 5, $currentYear + 1);
-    }
-
-    /**
-     * Get list of available payment methods.
-     */
-    public function getPaymentMethodsProperty()
-    {
-        return PaymentMethod::toArray();
-    }
-
-    /**
-     * Get list of available payment statuses.
-     */
-    public function getPaymentStatusesProperty()
-    {
-        return collect(PaymentStatus::cases())->map(function ($status) {
-            return [
-                'value' => $status->value,
-                'label' => $status->label(),
-            ];
-        })->toArray();
-    }
-
-    /**
-     * Render the component.
-     */
     public function render()
     {
-        $query = Payment::query()
-            ->with(['user', 'receipt'])
-            ->when(!$this->isAdmin, function ($query) {
-                return $query->where('user_id', Auth::id());
-            })
-            ->when($this->search, function ($query) {
-                return $query->where(function ($q) {
-                    $q->whereHas('user', function ($user) {
-                        $user->where('name', 'like', '%'.$this->search.'%')
-                            ->orWhere('email', 'like', '%'.$this->search.'%');
-                    })
-                        ->orWhere('reference_no', 'like', '%'.$this->search.'%')
-                        ->orWhereHas('receipt', function ($receipt) {
-                            $receipt->where('receipt_number', 'like', '%'.$this->search.'%');
-                        });
-                });
-            })
-            ->when($this->statusFilter, function ($query) {
-                return $query->where('status', $this->statusFilter);
-            })
-            ->when($this->methodFilter, function ($query) {
-                return $query->where('payment_method', $this->methodFilter);
-            })
-            ->when($this->yearFilter, function ($query) {
-                return $query->where('year', $this->yearFilter);
-            })
-            ->when($this->monthFilter, function ($query) {
-                return $query->where('month', $this->monthFilter);
-            });
+        $query = Payment::where('user_id', Auth::id());
+
+        // Apply filters from session if they exist
+        if (session()->has('payment_filter.status') && session('payment_filter.status') !== '') {
+            $query->where('status', session('payment_filter.status'));
+        }
+
+        if (session()->has('payment_filter.type') && session('payment_filter.type') !== '') {
+            $query->where('payment_type', session('payment_filter.type'));
+        }
+
+        if (session()->has('payment_filter.dateFrom') && session('payment_filter.dateFrom') !== '') {
+            $query->whereDate('created_at', '>=', session('payment_filter.dateFrom'));
+        }
+
+        if (session()->has('payment_filter.dateTo') && session('payment_filter.dateTo') !== '') {
+            $query->whereDate('created_at', '<=', session('payment_filter.dateTo'));
+        }
+
+        $payments = $query->latest()->paginate(10);
 
         return view('livewire.payment.payment-list', [
-            'payments' => $query->orderBy($this->sortField, $this->sortDirection)
-                ->paginate($this->perPage),
+            'payments' => $payments,
         ]);
     }
 }

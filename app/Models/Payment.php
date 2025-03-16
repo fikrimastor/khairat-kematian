@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Enums\PaymentMethod;
 use App\Enums\PaymentStatus;
-use App\Enums\PaymentType;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -47,7 +46,6 @@ class Payment extends Model
         'payment_date' => 'datetime',
         'verified_at' => 'datetime',
         'payment_method' => PaymentMethod::class,
-        'payment_type' => PaymentType::class,
         'status' => PaymentStatus::class,
     ];
 
@@ -134,6 +132,6 @@ class Payment extends Model
      */
     public function period(): Attribute
     {
-        return Attribute::get(get: fn () => $this->month.' '.$this->year);
+        return Attribute::get(fn () => $this->month.' '.$this->year);
     }
 }

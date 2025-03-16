@@ -15,15 +15,16 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(\App\Models\User::class)->constrained()->onDelete('cascade');
             $table->decimal('amount', 10, 2);
-            $table->string('payment_method', 50);
-            $table->string('reference_no', 100)->nullable();
-            $table->string('status', 50);
+            $table->string('payment_method');
+            $table->string('payment_type')->nullable();
+            $table->string('reference_no')->nullable();
+            $table->string('status');
             $table->timestamp('payment_date')->nullable();
-            $table->foreignId('verified_by')->nullable()->constrained('users');
+            $table->foreignId('verified_by')->nullable()->constrained('users')->onDelete('set null');
             $table->timestamp('verified_at')->nullable();
-            $table->string('month', 20);
-            $table->smallInteger('year');
-            $table->tinyInteger('household_count');
+            $table->string('month');
+            $table->year('year');
+            $table->unsignedTinyInteger('household_count')->default(1);
             $table->text('notes')->nullable();
             $table->timestamps();
 
