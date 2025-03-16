@@ -76,14 +76,14 @@ class ChipInAsiaGateway implements PaymentGatewayInterface
             // In production, make the actual API call
             if (app()->environment('production')) {
                 $response = Http::withHeaders([
-                    'Authorization' => 'Bearer ' . $this->apiKey,
+                    'Authorization' => 'Bearer '.$this->apiKey,
                     'Content-Type' => 'application/json',
                 ])
-                ->post($this->apiUrl . '/payments', $requestData);
+                    ->post($this->apiUrl.'/payments', $requestData);
 
                 if ($response->successful()) {
                     $responseData = $response->json();
-                    
+
                     return [
                         'success' => true,
                         'transaction_id' => $responseData['id'],
@@ -95,17 +95,17 @@ class ChipInAsiaGateway implements PaymentGatewayInterface
                         'status' => $response->status(),
                         'response' => $response->json(),
                     ]);
-                    
+
                     return [
                         'success' => false,
                         'status' => 'failed',
-                        'error' => 'Failed to process payment: ' . ($response->json()['message'] ?? 'Unknown error'),
+                        'error' => 'Failed to process payment: '.($response->json()['message'] ?? 'Unknown error'),
                     ];
                 }
             } else {
                 // For development/testing, simulate a successful response
                 $transactionId = 'CHIP-'.date('YmdHis').'-'.substr(uniqid(), -6);
-                
+
                 return [
                     'success' => true,
                     'transaction_id' => $transactionId,
@@ -148,15 +148,15 @@ class ChipInAsiaGateway implements PaymentGatewayInterface
             // In production, make the actual API call
             if (app()->environment('production')) {
                 $response = Http::withHeaders([
-                    'Authorization' => 'Bearer ' . $this->apiKey,
+                    'Authorization' => 'Bearer '.$this->apiKey,
                     'Content-Type' => 'application/json',
                 ])
-                ->get($this->apiUrl . '/payments/' . $referenceId);
+                    ->get($this->apiUrl.'/payments/'.$referenceId);
 
                 if ($response->successful()) {
                     $responseData = $response->json();
                     $isCompleted = $responseData['status'] === 'paid' || $responseData['status'] === 'completed';
-                    
+
                     return [
                         'success' => true,
                         'verified' => $isCompleted,
@@ -169,18 +169,18 @@ class ChipInAsiaGateway implements PaymentGatewayInterface
                         'status' => $response->status(),
                         'response' => $response->json(),
                     ]);
-                    
+
                     return [
                         'success' => false,
                         'verified' => false,
                         'status' => 'error',
-                        'message' => 'Failed to verify payment: ' . ($response->json()['message'] ?? 'Unknown error'),
+                        'message' => 'Failed to verify payment: '.($response->json()['message'] ?? 'Unknown error'),
                     ];
                 }
             } else {
                 // For development/testing, simulate verification
                 $isValid = str_starts_with($referenceId, 'CHIP-');
-                
+
                 return [
                     'success' => true,
                     'verified' => $isValid,
@@ -214,7 +214,7 @@ class ChipInAsiaGateway implements PaymentGatewayInterface
     {
         // In production, this would be the URL returned by the ChipIn API
         // For development/testing, we'll simulate a URL
-        
+
         $baseUrl = config('services.chipin.checkout_url', 'https://checkout.chip-in.asia');
         $params = http_build_query([
             'transaction_id' => $paymentData['transaction_id'],

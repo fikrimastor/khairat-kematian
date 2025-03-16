@@ -139,7 +139,7 @@ return [
     'dependent_updated' => 'Tanggungan dikemas kini dengan berjaya.',
     'dependent_deleted' => 'Tanggungan dipadam dengan berjaya.',
     'settings_updated' => 'Tetapan dikemas kini dengan berjaya.',
-    
+
     // Months
     'January' => 'Januari',
     'February' => 'Februari',

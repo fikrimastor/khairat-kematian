@@ -42,6 +42,11 @@
                 <div>
                     <p class="text-gray-500 text-sm">{{ __('Pending Payments') }}</p>
                     <p class="text-2xl font-bold">{{ $pendingPayments }}</p>
+                    @if($pendingPayments > 0)
+                        <a href="{{ route('admin.payment-verification') }}" class="text-sm text-yellow-600 hover:text-yellow-800 mt-1 inline-block">
+                            {{ __('Verify Payments') }} →
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>
@@ -201,7 +206,7 @@
             <h3 class="text-lg font-medium text-gray-900">{{ __('Quick Actions') }}</h3>
         </div>
         <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <a href="{{ route('payments.index') }}" class="flex items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
+            <a href="{{ route('admin.payment-verification') }}" class="flex items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
                 <div class="p-3 rounded-full bg-blue-100 text-blue-500 mr-4">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />

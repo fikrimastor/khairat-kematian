@@ -8,33 +8,42 @@ use App\Enums\PaymentType;
 use App\Models\Payment;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
-use Livewire\WithPagination;
 use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 
 class PaymentList extends Component
 {
-    use WithPagination;
     use WithFileUploads;
+    use WithPagination;
 
     // Upload Receipt Modal Properties
     public $showUploadModal = false;
+
     public $selectedPaymentId;
+
     public $receiptFile;
+
     public $receiptNotes;
 
     // Filters
     public $search = '';
+
     public $status = '';
+
     public $paymentMethod = '';
+
     public $paymentType = '';
+
     public $year = '';
+
     public $month = '';
-    
+
     // View Mode
     public $viewMode = 'list'; // 'list' or 'history'
-    
+
     // Sorting
     public $sortField = 'created_at';
+
     public $sortDirection = 'desc';
 
     // Query string parameters for shareable URLs
@@ -78,7 +87,7 @@ class PaymentList extends Component
         $this->reset(['search', 'status', 'paymentMethod', 'paymentType', 'month']);
         $this->year = date('Y');
         $this->resetPage();
-        
+
         // Also clear session filters
         session()->forget([
             'payment_filter.status',
@@ -94,13 +103,36 @@ class PaymentList extends Component
     }
 
     // Reset page when filters change
-    public function updatingSearch() { $this->resetPage(); }
-    public function updatingStatus() { $this->resetPage(); }
-    public function updatingPaymentMethod() { $this->resetPage(); }
-    public function updatingPaymentType() { $this->resetPage(); }
-    public function updatingYear() { $this->resetPage(); }
-    public function updatingMonth() { $this->resetPage(); }
-    
+    public function updatingSearch()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingStatus()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingPaymentMethod()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingPaymentType()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingYear()
+    {
+        $this->resetPage();
+    }
+
+    public function updatingMonth()
+    {
+        $this->resetPage();
+    }
+
     // Receipt Upload Methods
     public function uploadReceipt($paymentId)
     {
@@ -126,6 +158,7 @@ class PaymentList extends Component
         // Ensure the user can only upload receipts for their own payments
         if ($payment->user_id !== Auth::id()) {
             $this->addError('receiptFile', 'You are not authorized to upload a receipt for this payment.');
+
             return;
         }
 
@@ -152,8 +185,10 @@ class PaymentList extends Component
     public function getPaymentsProperty()
     {
         $user = Auth::user();
-        $query = Payment::query()->where('user_id', $user->id);
-        
+        $query = Payment::query()->when(!$user->is_admin, function ($query) use ($user) {
+            return $query->where('user_id', $user->id);
+        });
+
         // Apply filters based on view mode
         if ($this->viewMode === 'history') {
             // Advanced filtering for history view
@@ -163,21 +198,21 @@ class PaymentList extends Component
                         ->orWhere('notes', 'like', "%{$search}%");
                 });
             })
-            ->when($this->status, function ($query, $status) {
-                return $query->where('status', $status);
-            })
-            ->when($this->paymentMethod, function ($query, $method) {
-                return $query->where('payment_method', $method);
-            })
-            ->when($this->paymentType, function ($query, $type) {
-                return $query->where('payment_type', $type);
-            })
-            ->when($this->year, function ($query, $year) {
-                return $query->where('year', $year);
-            })
-            ->when($this->month, function ($query, $month) {
-                return $query->where('month', $month);
-            });
+                ->when($this->status, function ($query, $status) {
+                    return $query->where('status', $status);
+                })
+                ->when($this->paymentMethod, function ($query, $method) {
+                    return $query->where('payment_method', $method);
+                })
+                ->when($this->paymentType, function ($query, $type) {
+                    return $query->where('payment_type', $type);
+                })
+                ->when($this->year, function ($query, $year) {
+                    return $query->where('year', $year);
+                })
+                ->when($this->month, function ($query, $month) {
+                    return $query->where('month', $month);
+                });
         } else {
             // Simple filtering for list view (from session)
             if (session()->has('payment_filter.status') && session('payment_filter.status') !== '') {
@@ -196,7 +231,7 @@ class PaymentList extends Component
                 $query->whereDate('created_at', '<=', session('payment_filter.dateTo'));
             }
         }
-        
+
         return $query->orderBy($this->sortField, $this->sortDirection)->paginate(10);
     }
 

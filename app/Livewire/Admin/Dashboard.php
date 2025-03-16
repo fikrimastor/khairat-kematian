@@ -68,7 +68,7 @@ class Dashboard extends Component
                 DB::raw('MONTH(created_at) as month'),
                 DB::raw('SUM(amount) as total')
             )
-            ->groupBy('month')
+            ->groupBy(DB::raw('MONTH(created_at)'))
             ->orderBy('month')
             ->get()
             ->keyBy('month')

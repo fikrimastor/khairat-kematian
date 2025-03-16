@@ -77,10 +77,10 @@ class PaymentGatewayController extends Controller
                     ->with('success', 'Pembayaran berjaya! Resit telah dijana.');
             } else {
                 // Payment is still processing or failed
-                $newStatus = $verificationResult['status'] === 'failed' 
-                    ? PaymentStatus::FAILED 
+                $newStatus = $verificationResult['status'] === 'failed'
+                    ? PaymentStatus::FAILED
                     : PaymentStatus::PROCESSING;
-                
+
                 $payment->update([
                     'status' => $newStatus,
                 ]);
@@ -114,6 +114,8 @@ class PaymentGatewayController extends Controller
 
     /**
      * Handle failed payment
+     *
+     * @param  mixed  $transactionId
      */
     private function handleFailedPayment($transactionId)
     {
@@ -195,7 +197,7 @@ class PaymentGatewayController extends Controller
 
             if ($newStatus) {
                 $payment->update(['status' => $newStatus]);
-                
+
                 // Generate receipt for completed payments
                 if ($newStatus === PaymentStatus::COMPLETED && !$payment->receipt) {
                     $receipt = Receipt::create([
@@ -225,65 +227,67 @@ class PaymentGatewayController extends Controller
 
     /**
      * Validate webhook signature
+     *
+     * @param  mixed  $gateway
      */
     private function validateWebhookSignature(Request $request, $gateway)
     {
         // For ChipInAsia, validate the signature
         if ($gateway === 'chipin' || $gateway === 'chipinasia') {
             $signature = $request->header('X-Signature');
-            
+
             // If no signature in production, reject
             if (app()->environment('production') && !$signature) {
                 return false;
             }
-            
+
             // In development, skip validation
             if (!app()->environment('production')) {
                 return true;
             }
-            
+
             // Get the API secret
             $apiSecret = config('services.chipinasia.secret') ?? config('services.chipin.api_secret');
-            
+
             // Validate signature (implementation depends on ChipInAsia's signature method)
             $payload = $request->getContent();
             $calculatedSignature = hash_hmac('sha256', $payload, $apiSecret);
-            
+
             return hash_equals($calculatedSignature, $signature);
         }
-        
+
         // For Billplz, validate the X-Signature
         if ($gateway === 'billplz') {
             $xSignature = $request->header('X-Signature');
-            
+
             // If no signature in production, reject
             if (app()->environment('production') && !$xSignature) {
                 return false;
             }
-            
+
             // In development, skip validation
             if (!app()->environment('production')) {
                 return true;
             }
-            
+
             // Get the X-Signature key
             $xSignatureKey = config('services.billplz.x_signature_key');
-            
+
             // Billplz uses a different signature method
             // They concatenate all request parameters and sign them
             $data = $request->all();
             ksort($data);
-            
+
             $signatureString = '';
             foreach ($data as $key => $value) {
-                $signatureString .= $key . $value;
+                $signatureString .= $key.$value;
             }
-            
+
             $calculatedSignature = hash_hmac('sha256', $signatureString, $xSignatureKey);
-            
+
             return hash_equals($calculatedSignature, $xSignature);
         }
-        
+
         // For other gateways or development environment, return true
         return true;
     }

@@ -84,6 +84,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/members', [AdminController::class, 'members'])->name('members');
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
     Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
+    Route::get('/payment-verification', function () {
+        return view('admin.payment-verification');
+    })->name('payment-verification');
 });
 
 require __DIR__.'/auth.php';

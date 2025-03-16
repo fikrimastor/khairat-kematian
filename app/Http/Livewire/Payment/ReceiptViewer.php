@@ -4,16 +4,16 @@ namespace App\Http\Livewire\Payment;
 
 use App\Models\Receipt;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Support\Facades\Gate;
 use Livewire\Component;
 
 class ReceiptViewer extends Component
 {
     use AuthorizesRequests;
-    
+
     public Receipt $receipt;
+
     public bool $showDetails = false;
-    
+
     /**
      * Mount the component.
      */
@@ -22,7 +22,7 @@ class ReceiptViewer extends Component
         $this->receipt = $receipt;
         $this->authorize('view', $receipt);
     }
-    
+
     /**
      * Toggle the details visibility.
      */
@@ -30,7 +30,7 @@ class ReceiptViewer extends Component
     {
         $this->showDetails = !$this->showDetails;
     }
-    
+
     /**
      * Get the download URL for the receipt.
      */
@@ -38,7 +38,7 @@ class ReceiptViewer extends Component
     {
         return route('receipts.download', $this->receipt);
     }
-    
+
     /**
      * Get the payment associated with the receipt.
      */
@@ -46,7 +46,7 @@ class ReceiptViewer extends Component
     {
         return $this->receipt->payment;
     }
-    
+
     /**
      * Get the user associated with the receipt.
      */
@@ -54,7 +54,7 @@ class ReceiptViewer extends Component
     {
         return $this->receipt->payment->user;
     }
-    
+
     /**
      * Render the component.
      */
@@ -62,4 +62,4 @@ class ReceiptViewer extends Component
     {
         return view('livewire.payment.receipt-viewer');
     }
-} 
+}

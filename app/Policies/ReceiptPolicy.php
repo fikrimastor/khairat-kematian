@@ -27,7 +27,7 @@ class ReceiptPolicy
         if ($user->is_admin) {
             return true;
         }
-        
+
         // Users can only view their own receipts
         return $receipt->payment->user_id === $user->id;
     }
@@ -39,4 +39,4 @@ class ReceiptPolicy
     {
         return $user->is_admin;
     }
-} 
+}
