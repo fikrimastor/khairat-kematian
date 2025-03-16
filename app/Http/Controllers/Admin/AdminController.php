@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\View\View;
 
 class AdminController extends Controller
@@ -21,6 +22,16 @@ class AdminController extends Controller
     public function members(): View
     {
         return view('admin.members');
+    }
+
+    /**
+     * Display the details of a specific member.
+     */
+    public function memberDetails(User $member): View
+    {
+        return view('admin.member-details', [
+            'member' => $member,
+        ]);
     }
 
     /**

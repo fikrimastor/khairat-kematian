@@ -82,6 +82,7 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/members', [AdminController::class, 'members'])->name('members');
+    Route::get('/members/{member}', [AdminController::class, 'memberDetails'])->name('members.show');
     Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
     Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
     Route::get('/payment-verification', function () {
