@@ -33,6 +33,26 @@
                         </x-slot>
                         
                         <x-slot name="content">
+                            <x-dropdown-link :href="route('member.show')">
+                                <div class="flex">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    </svg>
+                                    
+                                    {{ __('My Profile') }}
+                                </div>
+                            </x-dropdown-link>
+                            
+                            <x-dropdown-link :href="route('dependent.index')">
+                                <div class="flex">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                    </svg>
+                                    
+                                    {{ __('Family Members') }}
+                                </div>
+                            </x-dropdown-link>
+                            
                             <x-dropdown-link :href="route('profile.edit')">
                                 <div class="flex">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -118,6 +138,14 @@
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
+            </x-responsive-nav-link>
+            
+            <x-responsive-nav-link :href="route('member.show')" :active="request()->routeIs('member.show')">
+                {{ __('My Profile') }}
+            </x-responsive-nav-link>
+            
+            <x-responsive-nav-link :href="route('dependent.index')" :active="request()->routeIs('dependent.*')">
+                {{ __('Family Members') }}
             </x-responsive-nav-link>
         </div>
 

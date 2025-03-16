@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Member\MemberController;
+use App\Http\Controllers\Member\DependentController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -51,5 +53,27 @@ Route::prefix('payment-gateway')->name('payment.')->group(function () {
 Route::get('/locale', function () {
     return 'Current locale: '.app()->getLocale();
 });
+
+// Member Routes
+Route::middleware(['auth', 'verified'])->prefix('member')->name('member.')->group(function () {
+    Route::get('/profile', [MemberController::class, 'show'])->name('show');
+    Route::get('/edit', [MemberController::class, 'edit'])->name('edit');
+    Route::patch('/', [MemberController::class, 'update'])->name('update');
+});
+
+// Dependent Routes
+Route::middleware(['auth', 'verified'])->prefix('dependent')->name('dependent.')->group(function () {
+    Route::get('/', [DependentController::class, 'index'])->name('index');
+    Route::get('/create', [DependentController::class, 'create'])->name('create');
+    Route::post('/', [DependentController::class, 'store'])->name('store');
+    Route::get('/{dependent}/edit', [DependentController::class, 'edit'])->name('edit');
+    Route::patch('/{dependent}', [DependentController::class, 'update'])->name('update');
+    Route::delete('/{dependent}', [DependentController::class, 'destroy'])->name('destroy');
+});
+
+// Registration Page - This uses the Livewire component
+Route::get('/register', function () {
+    return view('auth.register');
+})->middleware('guest')->name('register');
 
 require __DIR__.'/auth.php';
