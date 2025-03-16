@@ -10,15 +10,15 @@ class UpdateDependentAction
     /**
      * Update a dependent's information.
      *
-     * @param int $dependentId The dependent ID
-     * @param array $data The updated dependent data
+     * @param  int  $dependentId  The dependent ID
+     * @param  array  $data  The updated dependent data
      * @return Dependent The updated dependent
      */
     public function execute(int $dependentId, array $data): Dependent
     {
         return DB::transaction(function () use ($dependentId, $data) {
             $dependent = Dependent::findOrFail($dependentId);
-            
+
             // Update the dependent record
             $dependent->update([
                 'name' => $data['name'],
@@ -26,11 +26,11 @@ class UpdateDependentAction
                 'birth_date' => $data['birth_date'] ?? $dependent->birth_date,
                 'relationship' => $data['relationship'],
             ]);
-            
+
             // Dispatch event if needed
             // DependentUpdated::dispatch($dependent);
-            
+
             return $dependent;
         });
     }
-} 
+}

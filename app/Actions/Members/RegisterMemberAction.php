@@ -3,8 +3,8 @@
 namespace App\Actions\Members;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
 class RegisterMemberAction
@@ -12,7 +12,7 @@ class RegisterMemberAction
     /**
      * Register a new member.
      *
-     * @param array $data The member data
+     * @param  array  $data  The member data
      * @return User The newly created user
      */
     public function execute(array $data): User
@@ -29,16 +29,16 @@ class RegisterMemberAction
                 'is_admin' => false,
                 'language' => $data['language'] ?? 'ms', // Default to Bahasa Malaysia
             ]);
-            
+
             // Check if the member role exists and assign it
             if (Role::where('name', 'member')->exists()) {
                 $user->assignRole('member');
             }
-            
+
             // Dispatch event if needed
             // MemberRegistered::dispatch($user);
-            
+
             return $user;
         });
     }
-} 
+}

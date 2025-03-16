@@ -18,12 +18,12 @@ class DependentController extends Controller
     public function index(): View
     {
         $dependents = Auth::user()->dependents;
-        
+
         return view('member.dependents.index', [
-            'dependents' => $dependents
+            'dependents' => $dependents,
         ]);
     }
-    
+
     /**
      * Show the form for creating a new dependent.
      */
@@ -31,7 +31,7 @@ class DependentController extends Controller
     {
         return view('member.dependents.create');
     }
-    
+
     /**
      * Store a newly created dependent.
      */
@@ -43,13 +43,13 @@ class DependentController extends Controller
             'birth_date' => 'nullable|date',
             'relationship' => 'required|string|max:50',
         ]);
-        
+
         $dependent = $addDependent->execute(Auth::id(), $validated);
-        
+
         return redirect()->route('dependent.index')
             ->with('status', __('Dependent added successfully'));
     }
-    
+
     /**
      * Show the form for editing the specified dependent.
      */
@@ -59,12 +59,12 @@ class DependentController extends Controller
         if ($dependent->user_id !== Auth::id()) {
             abort(403);
         }
-        
+
         return view('member.dependents.edit', [
-            'dependent' => $dependent
+            'dependent' => $dependent,
         ]);
     }
-    
+
     /**
      * Update the specified dependent.
      */
@@ -74,20 +74,20 @@ class DependentController extends Controller
         if ($dependent->user_id !== Auth::id()) {
             abort(403);
         }
-        
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'identification_number' => 'nullable|string|max:20',
             'birth_date' => 'nullable|date',
             'relationship' => 'required|string|max:50',
         ]);
-        
+
         $updateDependent->execute($dependent->id, $validated);
-        
+
         return redirect()->route('dependent.index')
             ->with('status', __('Dependent updated successfully'));
     }
-    
+
     /**
      * Remove the specified dependent.
      */
@@ -97,10 +97,10 @@ class DependentController extends Controller
         if ($dependent->user_id !== Auth::id()) {
             abort(403);
         }
-        
+
         $dependent->delete();
-        
+
         return redirect()->route('dependent.index')
             ->with('status', __('Dependent removed successfully'));
     }
-} 
+}

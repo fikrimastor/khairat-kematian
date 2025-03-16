@@ -2,9 +2,8 @@
 
 namespace App\Http\Controllers\Member;
 
-use App\Actions\Members\RegisterMemberAction;
-use App\Actions\Members\UpdateMemberAction;
 use App\Actions\Members\ChangePasswordAction;
+use App\Actions\Members\UpdateMemberAction;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -28,7 +27,7 @@ class MemberController extends Controller
     public function show(): View
     {
         $user = Auth::user();
-        
+
         return view('member.show', [
             'user' => $user,
             'dependents' => $user->dependents,
@@ -52,7 +51,7 @@ class MemberController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . Auth::id(),
+            'email' => 'required|email|max:255|unique:users,email,'.Auth::id(),
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:500',
             'identification_number' => 'nullable|string|max:20',
@@ -91,4 +90,4 @@ class MemberController extends Controller
         return redirect()->route('member.show')
             ->with('status', __('Password changed successfully.'));
     }
-} 
+}

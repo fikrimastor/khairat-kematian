@@ -3,8 +3,8 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class RoleAndPermissionSeeder extends Seeder
 {
@@ -31,11 +31,11 @@ class RoleAndPermissionSeeder extends Seeder
         }
 
         // Create roles and assign permissions
-        
+
         // Admin role
         $adminRole = Role::create(['name' => 'admin']);
         $adminRole->givePermissionTo(Permission::all());
-        
+
         // Member role
         $memberRole = Role::create(['name' => 'member']);
         $memberRole->givePermissionTo([
@@ -43,4 +43,4 @@ class RoleAndPermissionSeeder extends Seeder
             'payment.view',
         ]);
     }
-} 
+}
