@@ -59,6 +59,8 @@ Route::middleware(['auth', 'verified'])->prefix('member')->name('member.')->grou
     Route::get('/profile', [MemberController::class, 'show'])->name('show');
     Route::get('/edit', [MemberController::class, 'edit'])->name('edit');
     Route::patch('/', [MemberController::class, 'update'])->name('update');
+    Route::get('/change-password', [MemberController::class, 'showChangePasswordForm'])->name('change-password');
+    Route::patch('/change-password', [MemberController::class, 'changePassword'])->name('update-password');
 });
 
 // Dependent Routes

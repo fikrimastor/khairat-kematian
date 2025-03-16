@@ -4,10 +4,12 @@ namespace App\Http\Controllers\Member;
 
 use App\Actions\Members\RegisterMemberAction;
 use App\Actions\Members\UpdateMemberAction;
+use App\Actions\Members\ChangePasswordAction;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\View\View;
 
 class MemberController extends Controller
@@ -60,5 +62,33 @@ class MemberController extends Controller
 
         return redirect()->route('member.show')
             ->with('status', __('Profile updated successfully'));
+    }
+
+    /**
+     * Display the change password form.
+     */
+    public function showChangePasswordForm(): View
+    {
+        return view('member.change-password');
+    }
+
+    /**
+     * Change the user's password.
+     */
+    public function changePassword(Request $request, ChangePasswordAction $changePassword)
+    {
+        $validated = $request->validate([
+            'current_password' => ['required', function ($attribute, $value, $fail) {
+                if (!Hash::check($value, Auth::user()->password)) {
+                    $fail(__('The current password is incorrect.'));
+                }
+            }],
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $changePassword->execute(Auth::id(), $validated);
+
+        return redirect()->route('member.show')
+            ->with('status', __('Password changed successfully.'));
     }
 } 

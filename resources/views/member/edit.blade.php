@@ -9,6 +9,13 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
+                    <div class="mb-5 flex justify-between items-center">
+                        <h3 class="text-lg font-medium leading-6 text-gray-900">{{ __('Personal Information') }}</h3>
+                        <a href="{{ route('member.show') }}" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
+                            {{ __('Cancel and return to profile') }} →
+                        </a>
+                    </div>
+                    
                     <form method="POST" action="{{ route('member.update') }}">
                         @csrf
                         @method('PATCH')
@@ -78,7 +85,7 @@
                             </div>
                         </div>
 
-                        <div class="mt-6 flex justify-end">
+                        <div class="mt-8 flex justify-end">
                             <a href="{{ route('member.show') }}" class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                 {{ __('Cancel') }}
                             </a>
