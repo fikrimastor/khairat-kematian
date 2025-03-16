@@ -48,6 +48,15 @@ return [
         'secret' => env('CHIPINASIA_SECRET'),
     ],
 
+    'billplz' => [
+        'api_key' => env('BILLPLZ_API_KEY', 'test_key'),
+        'x_signature_key' => env('BILLPLZ_X_SIGNATURE_KEY', 'test_signature'),
+        'collection_id' => env('BILLPLZ_COLLECTION_ID', 'test_collection'),
+        'api_url' => env('BILLPLZ_API_URL', 'https://www.billplz.com/api/v3'),
+        'checkout_url' => env('BILLPLZ_CHECKOUT_URL', 'https://www.billplz.com/bills'),
+        'sandbox_mode' => env('BILLPLZ_SANDBOX_MODE', true),
+    ],
+
     'bank_transfer' => [
         'bank_name' => env('BANK_TRANSFER_BANK_NAME', 'Bank Islam'),
         'account_number' => env('BANK_TRANSFER_ACCOUNT_NUMBER', '12345678901'),

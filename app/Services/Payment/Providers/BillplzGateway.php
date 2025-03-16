@@ -6,44 +6,53 @@ use App\Services\Payment\Contracts\PaymentGatewayInterface;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class ChipInAsiaGateway implements PaymentGatewayInterface
+class BillplzGateway implements PaymentGatewayInterface
 {
     /**
-     * The ChipIn API base URL
+     * The Billplz API base URL
      *
      * @var string
      */
     protected string $apiUrl;
 
     /**
-     * The ChipIn API key
+     * The Billplz API key
      *
      * @var string
      */
     protected string $apiKey;
 
     /**
-     * The ChipIn API secret
+     * The Billplz X-Signature Key
      *
      * @var string|null
      */
-    protected ?string $apiSecret;
+    protected ?string $xSignatureKey;
+
+    /**
+     * The Billplz Collection ID
+     *
+     * @var string
+     */
+    protected string $collectionId;
 
     /**
      * Constructor
      *
-     * @param  string|null  $apiKey  The API key for ChipIn
-     * @param  string|null  $apiSecret  The API secret for ChipIn
+     * @param  string|null  $apiKey  The API key for Billplz
+     * @param  string|null  $xSignatureKey  The X-Signature key for Billplz
+     * @param  string|null  $collectionId  The Collection ID for Billplz
      */
-    public function __construct(?string $apiKey = null, ?string $apiSecret = null)
+    public function __construct(?string $apiKey = null, ?string $xSignatureKey = null, ?string $collectionId = null)
     {
-        $this->apiUrl = config('services.chipin.api_url', 'https://api.chip-in.asia/v1');
-        $this->apiKey = $apiKey ?? config('services.chipin.api_key', 'test_key');
-        $this->apiSecret = $apiSecret ?? config('services.chipin.api_secret');
+        $this->apiUrl = config('services.billplz.api_url', 'https://www.billplz.com/api/v3');
+        $this->apiKey = $apiKey ?? config('services.billplz.api_key', 'test_key');
+        $this->xSignatureKey = $xSignatureKey ?? config('services.billplz.x_signature_key');
+        $this->collectionId = $collectionId ?? config('services.billplz.collection_id', 'test_collection');
     }
 
     /**
-     * Process a payment through ChipIn Asia
+     * Process a payment through Billplz
      *
      * @param  array  $paymentData  Payment data including amount, reference, etc.
      * @return array Response from the payment gateway
@@ -51,35 +60,31 @@ class ChipInAsiaGateway implements PaymentGatewayInterface
     public function processPayment(array $paymentData): array
     {
         try {
-            Log::info('Processing payment with ChipInAsia', [
+            Log::info('Processing payment with Billplz', [
                 'amount' => $paymentData['amount'],
                 'reference' => $paymentData['reference'] ?? null,
             ]);
 
-            // Prepare the request data for ChipIn API
+            // Prepare the request data for Billplz API
+            // Billplz requires amount in cents
+            $amountInCents = (int) ($paymentData['amount'] * 100);
+            
             $requestData = [
-                'amount' => $paymentData['amount'],
-                'currency' => 'MYR',
-                'reference' => $paymentData['reference'] ?? null,
-                'customer' => [
-                    'name' => $paymentData['user_name'] ?? null,
-                    'email' => $paymentData['user_email'] ?? null,
-                ],
-                'success_redirect' => route('payment-gateway.callback', ['gateway' => 'chipin']),
-                'failure_redirect' => route('payment-gateway.callback', ['gateway' => 'chipin', 'status' => 'failed']),
-                'callback_url' => route('payment-gateway.webhook'),
-                'send_receipt' => true,
-                'due' => now()->addHours(24)->toIso8601String(), // Payment due in 24 hours
+                'collection_id' => $this->collectionId,
+                'email' => $paymentData['user_email'] ?? 'user@example.com',
+                'name' => $paymentData['user_name'] ?? 'User',
+                'amount' => $amountInCents,
+                'callback_url' => route('payment-gateway.webhook', ['gateway' => 'billplz']),
                 'description' => 'Khairat Kematian Payment',
+                'reference_1_label' => 'Reference ID',
+                'reference_1' => $paymentData['reference'] ?? null,
+                'redirect_url' => route('payment-gateway.callback', ['gateway' => 'billplz']),
             ];
 
             // In production, make the actual API call
             if (app()->environment('production')) {
-                $response = Http::withHeaders([
-                    'Authorization' => 'Bearer ' . $this->apiKey,
-                    'Content-Type' => 'application/json',
-                ])
-                ->post($this->apiUrl . '/payments', $requestData);
+                $response = Http::withBasicAuth($this->apiKey, '')
+                    ->post($this->apiUrl . '/bills', $requestData);
 
                 if ($response->successful()) {
                     $responseData = $response->json();
@@ -87,11 +92,11 @@ class ChipInAsiaGateway implements PaymentGatewayInterface
                     return [
                         'success' => true,
                         'transaction_id' => $responseData['id'],
-                        'status' => $responseData['status'],
-                        'redirect_url' => $responseData['checkout_url'],
+                        'status' => 'pending',
+                        'redirect_url' => $responseData['url'],
                     ];
                 } else {
-                    Log::error('ChipInAsia API error', [
+                    Log::error('Billplz API error', [
                         'status' => $response->status(),
                         'response' => $response->json(),
                     ]);
@@ -99,12 +104,12 @@ class ChipInAsiaGateway implements PaymentGatewayInterface
                     return [
                         'success' => false,
                         'status' => 'failed',
-                        'error' => 'Failed to process payment: ' . ($response->json()['message'] ?? 'Unknown error'),
+                        'error' => 'Failed to process payment: ' . ($response->json()['error']['message'] ?? 'Unknown error'),
                     ];
                 }
             } else {
                 // For development/testing, simulate a successful response
-                $transactionId = 'CHIP-'.date('YmdHis').'-'.substr(uniqid(), -6);
+                $transactionId = 'BILLPLZ-'.date('YmdHis').'-'.substr(uniqid(), -6);
                 
                 return [
                     'success' => true,
@@ -118,7 +123,7 @@ class ChipInAsiaGateway implements PaymentGatewayInterface
                 ];
             }
         } catch (\Exception $e) {
-            Log::error('ChipIn payment processing exception', [
+            Log::error('Billplz payment processing exception', [
                 'message' => $e->getMessage(),
                 'payment_data' => $paymentData,
                 'trace' => $e->getTraceAsString(),
@@ -127,13 +132,13 @@ class ChipInAsiaGateway implements PaymentGatewayInterface
             return [
                 'success' => false,
                 'status' => 'failed',
-                'error' => 'Failed to process ChipIn payment: '.$e->getMessage(),
+                'error' => 'Failed to process Billplz payment: '.$e->getMessage(),
             ];
         }
     }
 
     /**
-     * Verify a payment status with ChipIn
+     * Verify a payment status with Billplz
      *
      * @param  string  $referenceId  The reference ID for the payment to verify
      * @return array Response with verification status
@@ -141,31 +146,28 @@ class ChipInAsiaGateway implements PaymentGatewayInterface
     public function verifyPayment(string $referenceId): array
     {
         try {
-            Log::info('Verifying payment with ChipInAsia', [
+            Log::info('Verifying payment with Billplz', [
                 'reference_id' => $referenceId,
             ]);
 
             // In production, make the actual API call
             if (app()->environment('production')) {
-                $response = Http::withHeaders([
-                    'Authorization' => 'Bearer ' . $this->apiKey,
-                    'Content-Type' => 'application/json',
-                ])
-                ->get($this->apiUrl . '/payments/' . $referenceId);
+                $response = Http::withBasicAuth($this->apiKey, '')
+                    ->get($this->apiUrl . '/bills/' . $referenceId);
 
                 if ($response->successful()) {
                     $responseData = $response->json();
-                    $isCompleted = $responseData['status'] === 'paid' || $responseData['status'] === 'completed';
+                    $isPaid = $responseData['paid'] === true;
                     
                     return [
                         'success' => true,
-                        'verified' => $isCompleted,
-                        'status' => $responseData['status'],
-                        'message' => $isCompleted ? 'Payment verified successfully' : 'Payment is still pending',
+                        'verified' => $isPaid,
+                        'status' => $isPaid ? 'completed' : 'pending',
+                        'message' => $isPaid ? 'Payment verified successfully' : 'Payment is still pending',
                         'payment_details' => $responseData,
                     ];
                 } else {
-                    Log::error('ChipInAsia verification API error', [
+                    Log::error('Billplz verification API error', [
                         'status' => $response->status(),
                         'response' => $response->json(),
                     ]);
@@ -174,12 +176,12 @@ class ChipInAsiaGateway implements PaymentGatewayInterface
                         'success' => false,
                         'verified' => false,
                         'status' => 'error',
-                        'message' => 'Failed to verify payment: ' . ($response->json()['message'] ?? 'Unknown error'),
+                        'message' => 'Failed to verify payment: ' . ($response->json()['error']['message'] ?? 'Unknown error'),
                     ];
                 }
             } else {
                 // For development/testing, simulate verification
-                $isValid = str_starts_with($referenceId, 'CHIP-');
+                $isValid = str_starts_with($referenceId, 'BILLPLZ-');
                 
                 return [
                     'success' => true,
@@ -189,7 +191,7 @@ class ChipInAsiaGateway implements PaymentGatewayInterface
                 ];
             }
         } catch (\Exception $e) {
-            Log::error('ChipIn payment verification exception', [
+            Log::error('Billplz payment verification exception', [
                 'message' => $e->getMessage(),
                 'reference_id' => $referenceId,
                 'trace' => $e->getTraceAsString(),
@@ -199,30 +201,30 @@ class ChipInAsiaGateway implements PaymentGatewayInterface
                 'success' => false,
                 'verified' => false,
                 'status' => 'error',
-                'message' => 'Failed to verify ChipIn payment: '.$e->getMessage(),
+                'message' => 'Failed to verify Billplz payment: '.$e->getMessage(),
             ];
         }
     }
 
     /**
-     * Generate a payment URL for ChipIn
+     * Generate a payment URL for Billplz
      *
      * @param  array  $paymentData  Payment data
      * @return string Payment URL
      */
     public function getPaymentUrl(array $paymentData): string
     {
-        // In production, this would be the URL returned by the ChipIn API
+        // In production, this would be the URL returned by the Billplz API
         // For development/testing, we'll simulate a URL
         
-        $baseUrl = config('services.chipin.checkout_url', 'https://checkout.chip-in.asia');
+        $baseUrl = config('services.billplz.checkout_url', 'https://www.billplz.com/bills');
         $params = http_build_query([
-            'transaction_id' => $paymentData['transaction_id'],
+            'id' => $paymentData['transaction_id'],
             'amount' => $paymentData['amount'],
             'reference' => $paymentData['reference'] ?? '',
-            'return_url' => route('payment-gateway.callback', ['gateway' => 'chipin']),
+            'return_url' => route('payment-gateway.callback', ['gateway' => 'billplz']),
         ]);
 
-        return $baseUrl.'?'.$params;
+        return $baseUrl.'/'.$paymentData['transaction_id'].'?'.$params;
     }
-}
+} 

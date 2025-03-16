@@ -6,6 +6,7 @@ enum PaymentMethod: string
 {
     case BankTransfer = 'bank_transfer';
     case ChipInAsia = 'chipin_asia';
+    case Billplz = 'billplz';
     case Cash = 'cash';
 
     /**
@@ -30,6 +31,7 @@ enum PaymentMethod: string
         return match ($method) {
             self::BankTransfer => 'Pindahan Bank',
             self::ChipInAsia => 'Pembayaran Dalam Talian (ChipIn Asia)',
+            self::Billplz => 'Pembayaran Dalam Talian (Billplz)',
             self::Cash => 'Tunai',
         };
     }
@@ -55,7 +57,7 @@ enum PaymentMethod: string
      */
     public function isOnline(): bool
     {
-        return $this === self::ChipInAsia;
+        return in_array($this, [self::ChipInAsia, self::Billplz]);
     }
 
     /**
@@ -74,6 +76,7 @@ enum PaymentMethod: string
         return match ($this) {
             self::BankTransfer => 'fas fa-university',
             self::ChipInAsia => 'fas fa-credit-card',
+            self::Billplz => 'fas fa-credit-card',
             self::Cash => 'fas fa-money-bill-wave',
         };
     }

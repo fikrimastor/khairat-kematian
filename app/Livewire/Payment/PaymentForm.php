@@ -8,6 +8,7 @@ use App\Enums\PaymentType;
 use App\Models\Payment;
 use App\Services\Payment\Factories\PaymentGatewayFactory;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 
 class PaymentForm extends Component
@@ -28,6 +29,10 @@ class PaymentForm extends Component
 
     public $showProcessingModal = false;
 
+    public $errorMessage = '';
+
+    public $availablePaymentMethods = [];
+
     public function mount()
     {
         $user = Auth::user();
@@ -38,6 +43,9 @@ class PaymentForm extends Component
         // Calculate amount based on user's membership status
         $this->calculatedAmount = $user->calculatePaymentAmount();
         $this->amount = $this->calculatedAmount;
+
+        // Get available payment methods
+        $this->availablePaymentMethods = PaymentMethod::toArray();
 
         // Show summary
         $this->updateSummary();
@@ -85,6 +93,7 @@ class PaymentForm extends Component
         ]);
 
         $this->showProcessingModal = true;
+        $this->errorMessage = '';
 
         try {
             $user = Auth::user();
@@ -104,45 +113,143 @@ class PaymentForm extends Component
                 'notes' => $this->reference,
             ]);
 
-            // Process payment through gateway if needed
-            if ($this->paymentMethod === PaymentMethod::ChipInAsia->value) {
-                $gatewayFactory = new PaymentGatewayFactory;
-                $gateway = $gatewayFactory->make('chipin');
+            Log::info('Payment record created', [
+                'payment_id' => $payment->id,
+                'user_id' => $user->id,
+                'amount' => $this->amount,
+                'payment_method' => $this->paymentMethod,
+            ]);
 
-                $result = $gateway->processPayment([
+            // Process payment through gateway if needed
+            if (in_array($this->paymentMethod, [PaymentMethod::ChipInAsia->value, PaymentMethod::Billplz->value])) {
+                return $this->processOnlinePayment($payment, $user);
+            } else {
+                return $this->processManualPayment($payment);
+            }
+        } catch (\Exception $e) {
+            Log::error('Payment processing error', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+                'payment_data' => [
+                    'user_id' => Auth::id(),
                     'amount' => $this->amount,
-                    'reference' => $payment->reference_id,
-                    'user_id' => $user->id,
-                    'user_name' => $user->name,
-                    'user_email' => $user->email,
+                    'payment_method' => $this->paymentMethod,
+                    'payment_type' => $this->paymentType,
+                ],
+            ]);
+
+            $this->showProcessingModal = false;
+            $this->errorMessage = 'Ralat berlaku semasa memproses pembayaran: '.$e->getMessage();
+        }
+    }
+
+    /**
+     * Process online payment through payment gateway
+     */
+    private function processOnlinePayment($payment, $user)
+    {
+        try {
+            $gatewayFactory = new PaymentGatewayFactory;
+            
+            // Determine which gateway to use based on payment method
+            $gatewayName = match($this->paymentMethod) {
+                PaymentMethod::ChipInAsia->value => 'chipin',
+                PaymentMethod::Billplz->value => 'billplz',
+                default => throw new \Exception('Unsupported online payment method')
+            };
+            
+            $gateway = $gatewayFactory->make($gatewayName);
+
+            $result = $gateway->processPayment([
+                'amount' => $this->amount,
+                'reference' => $payment->reference_id,
+                'user_id' => $user->id,
+                'user_name' => $user->name,
+                'user_email' => $user->email,
+                'payment_type' => $this->paymentType,
+            ]);
+
+            if ($result['success']) {
+                $payment->update([
+                    'reference_id' => $result['transaction_id'],
+                    'status' => PaymentStatus::PROCESSING,
                 ]);
 
-                if ($result['success']) {
-                    $payment->update([
-                        'reference_id' => $result['transaction_id'],
-                        'status' => PaymentStatus::PROCESSING,
-                    ]);
-
-                    $this->showProcessingModal = false;
-
-                    // Redirect to payment gateway
-                    return redirect()->to($result['redirect_url']);
-                } else {
-                    throw new \Exception($result['error'] ?? 'Failed to process payment');
-                }
-            } else {
-                // For non-gateway payments, update the payment status
-                $payment->update([
-                    'status' => PaymentStatus::PENDING->value,
+                Log::info('Payment processed successfully', [
+                    'payment_id' => $payment->id,
+                    'transaction_id' => $result['transaction_id'],
+                    'status' => PaymentStatus::PROCESSING,
+                    'gateway' => $gatewayName,
                 ]);
 
                 $this->showProcessingModal = false;
 
-                return redirect()->route('payments.show', $payment)->with('success', 'Pembayaran telah direkodkan. Sila tunggu untuk pengesahan.');
+                // Redirect to payment gateway
+                return redirect()->to($result['redirect_url']);
+            } else {
+                throw new \Exception($result['error'] ?? 'Gagal memproses pembayaran');
             }
         } catch (\Exception $e) {
+            Log::error('Online payment processing error', [
+                'payment_id' => $payment->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            // Update payment status to failed
+            $payment->update([
+                'status' => PaymentStatus::FAILED,
+            ]);
+
             $this->showProcessingModal = false;
-            $this->addError('payment', 'Failed to process payment: '.$e->getMessage());
+            $this->errorMessage = 'Ralat berlaku semasa memproses pembayaran: '.$e->getMessage();
+        }
+    }
+
+    /**
+     * Process manual payment (bank transfer)
+     */
+    private function processManualPayment($payment)
+    {
+        try {
+            // For bank transfers, get the payment details
+            if ($this->paymentMethod === PaymentMethod::BankTransfer->value) {
+                $gatewayFactory = new PaymentGatewayFactory;
+                $gateway = $gatewayFactory->make('banktransfer');
+                
+                $result = $gateway->getPaymentUrl([
+                    'amount' => $this->amount,
+                    'reference' => $payment->reference_id,
+                ]);
+                
+                // Store bank details in session for display
+                session()->flash('bank_details', $result['bank_details'] ?? null);
+                session()->flash('payment_instructions', $result['instructions'] ?? null);
+            }
+            
+            // Update payment status
+            $payment->update([
+                'status' => PaymentStatus::PENDING->value,
+            ]);
+
+            Log::info('Manual payment recorded', [
+                'payment_id' => $payment->id,
+                'payment_method' => $this->paymentMethod,
+            ]);
+
+            $this->showProcessingModal = false;
+
+            return redirect()->route('payments.show', $payment)
+                ->with('success', 'Pembayaran telah direkodkan. Sila tunggu untuk pengesahan.');
+        } catch (\Exception $e) {
+            Log::error('Manual payment processing error', [
+                'payment_id' => $payment->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            $this->showProcessingModal = false;
+            $this->errorMessage = 'Ralat berlaku semasa memproses pembayaran: '.$e->getMessage();
         }
     }
 
@@ -155,7 +262,7 @@ class PaymentForm extends Component
     {
         return view('livewire.payment.payment-form', [
             'paymentTypes' => PaymentType::toArray(),
-            'paymentMethods' => PaymentMethod::toArray(),
+            'paymentMethods' => $this->availablePaymentMethods,
         ]);
     }
 }
