@@ -35,14 +35,6 @@ class AdminController extends Controller
     }
 
     /**
-     * Display the system settings page.
-     */
-    public function settings(): View
-    {
-        return view('admin.settings');
-    }
-
-    /**
      * Display the reports generation page.
      */
     public function reports(): View

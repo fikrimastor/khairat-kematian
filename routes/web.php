@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\SystemSettingsController;
 use App\Http\Controllers\Member\DependentController;
 use App\Http\Controllers\Member\MemberController;
 use App\Http\Controllers\Payment\PaymentController;
@@ -83,7 +84,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/members', [AdminController::class, 'members'])->name('members');
     Route::get('/members/{member}', [AdminController::class, 'memberDetails'])->name('members.show');
-    Route::get('/settings', [AdminController::class, 'settings'])->name('settings');
+
+    // System Settings Routes
+    Route::get('/settings', [SystemSettingsController::class, 'index'])->name('settings');
+    Route::patch('/settings/{key}', [SystemSettingsController::class, 'update'])->name('settings.update');
+    Route::post('/settings/bulk-update', [SystemSettingsController::class, 'bulkUpdate'])->name('settings.bulk-update');
+
     Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
     Route::get('/payment-verification', function () {
         return view('admin.payment-verification');

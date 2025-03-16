@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Livewire\Payment;
+namespace App\Livewire\Payment;
 
 use App\Models\Receipt;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
