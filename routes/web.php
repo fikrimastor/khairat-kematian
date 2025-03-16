@@ -65,4 +65,16 @@ Route::get('/register', function () {
     return view('auth.register');
 })->middleware('guest')->name('register');
 
+// Receipt routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/receipts', [App\Http\Controllers\Payment\ReceiptController::class, 'index'])->name('receipts.index');
+    Route::get('/receipts/{receipt}', [App\Http\Controllers\Payment\ReceiptController::class, 'show'])->name('receipts.show');
+    Route::get('/receipts/{receipt}/download', [App\Http\Controllers\Payment\ReceiptController::class, 'download'])->name('receipts.download');
+    
+    // Admin only routes
+    Route::middleware(['can:generate,App\Models\Receipt'])->group(function () {
+        Route::post('/payments/{payment}/generate-receipt', [App\Http\Controllers\Payment\ReceiptController::class, 'generate'])->name('receipts.generate');
+    });
+});
+
 require __DIR__.'/auth.php';
