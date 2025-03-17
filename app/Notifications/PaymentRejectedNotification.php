@@ -2,13 +2,13 @@
 
 namespace App\Notifications;
 
+use App\Enums\NotificationType;
 use App\Models\Payment;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class PaymentRejectedNotification extends Notification implements ShouldQueue
+class PaymentRejectedNotification extends BaseNotification
 {
     use Queueable;
 
@@ -20,13 +20,11 @@ class PaymentRejectedNotification extends Notification implements ShouldQueue
     ) {}
 
     /**
-     * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
+     * Get the notification type.
      */
-    public function via(object $notifiable): array
+    public function getType(): NotificationType
     {
-        return ['mail', 'database'];
+        return NotificationType::PAYMENT_REJECTED;
     }
 
     /**
@@ -63,7 +61,7 @@ class PaymentRejectedNotification extends Notification implements ShouldQueue
             'year' => $this->payment->year,
             'notes' => $this->payment->notes,
             'message' => 'Your payment has been rejected.',
-            'type' => 'payment_rejected',
+            'type' => $this->getType()->value,
         ];
     }
 }

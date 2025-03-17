@@ -235,6 +235,11 @@
 			
 			<!-- Settings Dropdown -->
 			<div class="hidden sm:flex sm:items-center sm:ms-6">
+				<!-- Notification Indicator -->
+				<div class="mr-3">
+					<livewire:notification-indicator />
+				</div>
+
 				<x-dropdown align="right" width="48">
 					<x-slot name="trigger">
 						<button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
@@ -255,6 +260,10 @@
 					<x-slot name="content">
 						<x-dropdown-link :href="route('profile.edit')">
 							{{ __('Profile') }}
+						</x-dropdown-link>
+						
+						<x-dropdown-link :href="route('notifications.preferences')">
+							{{ __('Notification Preferences') }}
 						</x-dropdown-link>
 						
 						<!-- Authentication -->
@@ -355,6 +364,10 @@
 			<div class="mt-3 space-y-1">
 				<x-responsive-nav-link :href="route('profile.edit')">
 					{{ __('Profile') }}
+				</x-responsive-nav-link>
+				
+				<x-responsive-nav-link :href="route('notifications.preferences')">
+					{{ __('Notification Preferences') }}
 				</x-responsive-nav-link>
 				
 				<!-- Authentication -->
