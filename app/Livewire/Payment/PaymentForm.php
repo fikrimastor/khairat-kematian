@@ -145,19 +145,22 @@ class PaymentForm extends Component
 
     /**
      * Process online payment through payment gateway
+     *
+     * @param  mixed  $payment
+     * @param  mixed  $user
      */
     private function processOnlinePayment($payment, $user)
     {
         try {
             $gatewayFactory = new PaymentGatewayFactory;
-            
+
             // Determine which gateway to use based on payment method
-            $gatewayName = match($this->paymentMethod) {
+            $gatewayName = match ($this->paymentMethod) {
                 PaymentMethod::ChipInAsia->value => 'chipin',
                 PaymentMethod::Billplz->value => 'billplz',
                 default => throw new \Exception('Unsupported online payment method')
             };
-            
+
             $gateway = $gatewayFactory->make($gatewayName);
 
             $result = $gateway->processPayment([
@@ -208,6 +211,8 @@ class PaymentForm extends Component
 
     /**
      * Process manual payment (bank transfer)
+     *
+     * @param  mixed  $payment
      */
     private function processManualPayment($payment)
     {
@@ -216,17 +221,17 @@ class PaymentForm extends Component
             if ($this->paymentMethod === PaymentMethod::BankTransfer->value) {
                 $gatewayFactory = new PaymentGatewayFactory;
                 $gateway = $gatewayFactory->make('banktransfer');
-                
+
                 $result = $gateway->getPaymentUrl([
                     'amount' => $this->amount,
                     'reference' => $payment->reference_id,
                 ]);
-                
+
                 // Store bank details in session for display
                 session()->flash('bank_details', $result['bank_details'] ?? null);
                 session()->flash('payment_instructions', $result['instructions'] ?? null);
             }
-            
+
             // Update payment status
             $payment->update([
                 'status' => PaymentStatus::PENDING->value,

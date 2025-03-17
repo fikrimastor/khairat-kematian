@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\SystemSettingsController;
 use App\Http\Controllers\Member\DependentController;
 use App\Http\Controllers\Member\MemberController;
 use App\Http\Controllers\Payment\PaymentController;
@@ -70,11 +72,28 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/receipts', [App\Http\Controllers\Payment\ReceiptController::class, 'index'])->name('receipts.index');
     Route::get('/receipts/{receipt}', [App\Http\Controllers\Payment\ReceiptController::class, 'show'])->name('receipts.show');
     Route::get('/receipts/{receipt}/download', [App\Http\Controllers\Payment\ReceiptController::class, 'download'])->name('receipts.download');
-    
+
     // Admin only routes
     Route::middleware(['can:generate,App\Models\Receipt'])->group(function () {
         Route::post('/payments/{payment}/generate-receipt', [App\Http\Controllers\Payment\ReceiptController::class, 'generate'])->name('receipts.generate');
     });
+});
+
+// Admin Routes
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
+    Route::get('/members', [AdminController::class, 'members'])->name('members');
+    Route::get('/members/{member}', [AdminController::class, 'memberDetails'])->name('members.show');
+
+    // System Settings Routes
+    Route::get('/settings', [SystemSettingsController::class, 'index'])->name('settings');
+    Route::patch('/settings/{key}', [SystemSettingsController::class, 'update'])->name('settings.update');
+    Route::post('/settings/bulk-update', [SystemSettingsController::class, 'bulkUpdate'])->name('settings.bulk-update');
+
+    Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
+    Route::get('/payment-verification', function () {
+        return view('admin.payment-verification');
+    })->name('payment-verification');
 });
 
 require __DIR__.'/auth.php';

@@ -68,7 +68,7 @@ class BillplzGateway implements PaymentGatewayInterface
             // Prepare the request data for Billplz API
             // Billplz requires amount in cents
             $amountInCents = (int) ($paymentData['amount'] * 100);
-            
+
             $requestData = [
                 'collection_id' => $this->collectionId,
                 'email' => $paymentData['user_email'] ?? 'user@example.com',
@@ -84,11 +84,11 @@ class BillplzGateway implements PaymentGatewayInterface
             // In production, make the actual API call
             if (app()->environment('production')) {
                 $response = Http::withBasicAuth($this->apiKey, '')
-                    ->post($this->apiUrl . '/bills', $requestData);
+                    ->post($this->apiUrl.'/bills', $requestData);
 
                 if ($response->successful()) {
                     $responseData = $response->json();
-                    
+
                     return [
                         'success' => true,
                         'transaction_id' => $responseData['id'],
@@ -100,17 +100,17 @@ class BillplzGateway implements PaymentGatewayInterface
                         'status' => $response->status(),
                         'response' => $response->json(),
                     ]);
-                    
+
                     return [
                         'success' => false,
                         'status' => 'failed',
-                        'error' => 'Failed to process payment: ' . ($response->json()['error']['message'] ?? 'Unknown error'),
+                        'error' => 'Failed to process payment: '.($response->json()['error']['message'] ?? 'Unknown error'),
                     ];
                 }
             } else {
                 // For development/testing, simulate a successful response
                 $transactionId = 'BILLPLZ-'.date('YmdHis').'-'.substr(uniqid(), -6);
-                
+
                 return [
                     'success' => true,
                     'transaction_id' => $transactionId,
@@ -153,12 +153,12 @@ class BillplzGateway implements PaymentGatewayInterface
             // In production, make the actual API call
             if (app()->environment('production')) {
                 $response = Http::withBasicAuth($this->apiKey, '')
-                    ->get($this->apiUrl . '/bills/' . $referenceId);
+                    ->get($this->apiUrl.'/bills/'.$referenceId);
 
                 if ($response->successful()) {
                     $responseData = $response->json();
                     $isPaid = $responseData['paid'] === true;
-                    
+
                     return [
                         'success' => true,
                         'verified' => $isPaid,
@@ -171,18 +171,18 @@ class BillplzGateway implements PaymentGatewayInterface
                         'status' => $response->status(),
                         'response' => $response->json(),
                     ]);
-                    
+
                     return [
                         'success' => false,
                         'verified' => false,
                         'status' => 'error',
-                        'message' => 'Failed to verify payment: ' . ($response->json()['error']['message'] ?? 'Unknown error'),
+                        'message' => 'Failed to verify payment: '.($response->json()['error']['message'] ?? 'Unknown error'),
                     ];
                 }
             } else {
                 // For development/testing, simulate verification
                 $isValid = str_starts_with($referenceId, 'BILLPLZ-');
-                
+
                 return [
                     'success' => true,
                     'verified' => $isValid,
@@ -216,7 +216,7 @@ class BillplzGateway implements PaymentGatewayInterface
     {
         // In production, this would be the URL returned by the Billplz API
         // For development/testing, we'll simulate a URL
-        
+
         $baseUrl = config('services.billplz.checkout_url', 'https://www.billplz.com/bills');
         $params = http_build_query([
             'id' => $paymentData['transaction_id'],
@@ -227,4 +227,4 @@ class BillplzGateway implements PaymentGatewayInterface
 
         return $baseUrl.'/'.$paymentData['transaction_id'].'?'.$params;
     }
-} 
+}

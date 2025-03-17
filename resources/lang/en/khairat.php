@@ -139,7 +139,7 @@ return [
     'dependent_updated' => 'Dependent updated successfully.',
     'dependent_deleted' => 'Dependent deleted successfully.',
     'settings_updated' => 'Settings updated successfully.',
-    
+
     // Months
     'January' => 'January',
     'February' => 'February',

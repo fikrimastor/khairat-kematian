@@ -5,6 +5,7 @@ namespace App\Services\Payment\Providers;
 use App\Services\Payment\Contracts\PaymentGatewayInterface;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use App\Enums\PaymentStatus;
 
 class ChipInAsiaGateway implements PaymentGatewayInterface
 {
@@ -37,7 +38,7 @@ class ChipInAsiaGateway implements PaymentGatewayInterface
      */
     public function __construct(?string $apiKey = null, ?string $apiSecret = null)
     {
-        $this->apiUrl = config('services.chipin.api_url', 'https://api.chip-in.asia/v1');
+        $this->apiUrl = config('services.chipin.api_url', 'https://gate.chip-in.asia/api/v1');
         $this->apiKey = $apiKey ?? config('services.chipin.api_key', 'test_key');
         $this->apiSecret = $apiSecret ?? config('services.chipin.api_secret');
     }
@@ -56,67 +57,19 @@ class ChipInAsiaGateway implements PaymentGatewayInterface
                 'reference' => $paymentData['reference'] ?? null,
             ]);
 
-            // Prepare the request data for ChipIn API
-            $requestData = [
-                'amount' => $paymentData['amount'],
-                'currency' => 'MYR',
-                'reference' => $paymentData['reference'] ?? null,
-                'customer' => [
-                    'name' => $paymentData['user_name'] ?? null,
-                    'email' => $paymentData['user_email'] ?? null,
-                ],
-                'success_redirect' => route('payment-gateway.callback', ['gateway' => 'chipin']),
-                'failure_redirect' => route('payment-gateway.callback', ['gateway' => 'chipin', 'status' => 'failed']),
-                'callback_url' => route('payment-gateway.webhook'),
-                'send_receipt' => true,
-                'due' => now()->addHours(24)->toIso8601String(), // Payment due in 24 hours
-                'description' => 'Khairat Kematian Payment',
-            ];
-
-            // In production, make the actual API call
-            if (app()->environment('production')) {
-                $response = Http::withHeaders([
-                    'Authorization' => 'Bearer ' . $this->apiKey,
-                    'Content-Type' => 'application/json',
-                ])
-                ->post($this->apiUrl . '/payments', $requestData);
-
-                if ($response->successful()) {
-                    $responseData = $response->json();
-                    
-                    return [
-                        'success' => true,
-                        'transaction_id' => $responseData['id'],
-                        'status' => $responseData['status'],
-                        'redirect_url' => $responseData['checkout_url'],
-                    ];
-                } else {
-                    Log::error('ChipInAsia API error', [
-                        'status' => $response->status(),
-                        'response' => $response->json(),
-                    ]);
-                    
-                    return [
-                        'success' => false,
-                        'status' => 'failed',
-                        'error' => 'Failed to process payment: ' . ($response->json()['message'] ?? 'Unknown error'),
-                    ];
-                }
-            } else {
-                // For development/testing, simulate a successful response
-                $transactionId = 'CHIP-'.date('YmdHis').'-'.substr(uniqid(), -6);
-                
-                return [
-                    'success' => true,
-                    'transaction_id' => $transactionId,
-                    'status' => 'pending',
-                    'redirect_url' => $this->getPaymentUrl([
-                        'transaction_id' => $transactionId,
-                        'amount' => $paymentData['amount'],
-                        'reference' => $paymentData['reference'] ?? null,
-                    ]),
-                ];
+            // Create a purchase using Chip In Asia API
+            $purchaseData = $this->createPurchase($paymentData);
+            
+            if (!$purchaseData['success']) {
+                return $purchaseData;
             }
+            
+            return [
+                'success' => true,
+                'transaction_id' => $purchaseData['transaction_id'],
+                'status' => PaymentStatus::PENDING,
+                'redirect_url' => $purchaseData['redirect_url'],
+            ];
         } catch (\Exception $e) {
             Log::error('ChipIn payment processing exception', [
                 'message' => $e->getMessage(),
@@ -126,8 +79,79 @@ class ChipInAsiaGateway implements PaymentGatewayInterface
 
             return [
                 'success' => false,
-                'status' => 'failed',
+                'status' => PaymentStatus::FAILED,
                 'error' => 'Failed to process ChipIn payment: '.$e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Create a purchase using Chip In Asia API
+     *
+     * @param  array  $paymentData  Payment data
+     * @return array  Purchase data including transaction ID and redirect URL
+     */
+    protected function createPurchase(array $paymentData): array
+    {
+        // Prepare the request data for ChipIn API according to documentation
+        $requestData = [
+            'title' => 'Khairat Kematian ' . ($paymentData['payment_type'] ?? 'Payment'),
+            'description' => 'Payment for Khairat Kematian services',
+            'reference' => $paymentData['reference'] ?? null,
+            'amount' => (float) $paymentData['amount'],
+            'currency' => 'MYR',
+            'redirect_url' => route('payment-gateway.callback', ['gateway' => 'chipin']),
+            'callback_url' => route('payment-gateway.webhook'),
+            'send_receipt' => true,
+            'due' => now()->addDays(7)->toIso8601String(),
+            'brand_id' => config('services.chipin.brand_id'),
+            'client' => [
+                'email' => $paymentData['user_email'] ?? null,
+                'phone' => $paymentData['user_phone'] ?? null,
+                'name' => $paymentData['user_name'] ?? null,
+            ],
+            'platform' => 'khairat-kematian',
+        ];
+
+        // In production, make the actual API call
+        if (app()->environment('production')) {
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer '.$this->apiKey,
+                'Content-Type' => 'application/json',
+            ])->post($this->apiUrl.'/purchases', $requestData);
+
+            if ($response->successful()) {
+                $responseData = $response->json();
+
+                return [
+                    'success' => true,
+                    'transaction_id' => $responseData['id'],
+                    'redirect_url' => $responseData['checkout_url'],
+                ];
+            } else {
+                Log::error('ChipInAsia API error', [
+                    'status' => $response->status(),
+                    'response' => $response->json(),
+                ]);
+
+                return [
+                    'success' => false,
+                    'status' => PaymentStatus::FAILED,
+                    'error' => 'Failed to process payment: '.($response->json()['message'] ?? 'Unknown error'),
+                ];
+            }
+        } else {
+            // For development/testing, simulate a successful response
+            $transactionId = 'CHIP-'.date('YmdHis').'-'.substr(uniqid(), -6);
+
+            return [
+                'success' => true,
+                'transaction_id' => $transactionId,
+                'redirect_url' => $this->getPaymentUrl([
+                    'transaction_id' => $transactionId,
+                    'amount' => $paymentData['amount'],
+                    'reference' => $paymentData['reference'] ?? null,
+                ]),
             ];
         }
     }
@@ -148,19 +172,18 @@ class ChipInAsiaGateway implements PaymentGatewayInterface
             // In production, make the actual API call
             if (app()->environment('production')) {
                 $response = Http::withHeaders([
-                    'Authorization' => 'Bearer ' . $this->apiKey,
+                    'Authorization' => 'Bearer '.$this->apiKey,
                     'Content-Type' => 'application/json',
-                ])
-                ->get($this->apiUrl . '/payments/' . $referenceId);
+                ])->get($this->apiUrl.'/purchases/'.$referenceId);
 
                 if ($response->successful()) {
                     $responseData = $response->json();
                     $isCompleted = $responseData['status'] === 'paid' || $responseData['status'] === 'completed';
-                    
+
                     return [
                         'success' => true,
                         'verified' => $isCompleted,
-                        'status' => $responseData['status'],
+                        'status' => $isCompleted ? PaymentStatus::COMPLETED : PaymentStatus::PENDING,
                         'message' => $isCompleted ? 'Payment verified successfully' : 'Payment is still pending',
                         'payment_details' => $responseData,
                     ];
@@ -169,22 +192,22 @@ class ChipInAsiaGateway implements PaymentGatewayInterface
                         'status' => $response->status(),
                         'response' => $response->json(),
                     ]);
-                    
+
                     return [
                         'success' => false,
                         'verified' => false,
-                        'status' => 'error',
-                        'message' => 'Failed to verify payment: ' . ($response->json()['message'] ?? 'Unknown error'),
+                        'status' => PaymentStatus::FAILED,
+                        'message' => 'Failed to verify payment: '.($response->json()['message'] ?? 'Unknown error'),
                     ];
                 }
             } else {
                 // For development/testing, simulate verification
                 $isValid = str_starts_with($referenceId, 'CHIP-');
-                
+
                 return [
                     'success' => true,
                     'verified' => $isValid,
-                    'status' => $isValid ? 'completed' : 'failed',
+                    'status' => $isValid ? PaymentStatus::COMPLETED : PaymentStatus::FAILED,
                     'message' => $isValid ? 'Payment verified successfully' : 'Payment verification failed',
                 ];
             }
@@ -198,7 +221,7 @@ class ChipInAsiaGateway implements PaymentGatewayInterface
             return [
                 'success' => false,
                 'verified' => false,
-                'status' => 'error',
+                'status' => PaymentStatus::FAILED,
                 'message' => 'Failed to verify ChipIn payment: '.$e->getMessage(),
             ];
         }
@@ -214,7 +237,7 @@ class ChipInAsiaGateway implements PaymentGatewayInterface
     {
         // In production, this would be the URL returned by the ChipIn API
         // For development/testing, we'll simulate a URL
-        
+
         $baseUrl = config('services.chipin.checkout_url', 'https://checkout.chip-in.asia');
         $params = http_build_query([
             'transaction_id' => $paymentData['transaction_id'],

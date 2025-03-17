@@ -39,8 +39,9 @@ return [
     'chipin' => [
         'api_key' => env('CHIPIN_API_KEY', 'test_key'),
         'api_secret' => env('CHIPIN_API_SECRET', 'test_secret'),
-        'api_url' => env('CHIPIN_API_URL', 'https://api.chip-in.asia/v1'),
+        'api_url' => env('CHIPIN_API_URL', 'https://gate.chip-in.asia/api/v1'),
         'checkout_url' => env('CHIPIN_CHECKOUT_URL', 'https://checkout.chip-in.asia'),
+        'brand_id' => env('CHIPIN_BRAND_ID'),
     ],
 
     'chipinasia' => [
