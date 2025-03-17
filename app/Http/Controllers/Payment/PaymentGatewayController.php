@@ -249,11 +249,20 @@ class PaymentGatewayController extends Controller
             // Get the API secret
             $apiSecret = config('services.chipinasia.secret') ?? config('services.chipin.api_secret');
 
-            // Validate signature (implementation depends on ChipInAsia's signature method)
-            $payload = $request->getContent();
-            $calculatedSignature = hash_hmac('sha256', $payload, $apiSecret);
+            if (!$apiSecret) {
+                Log::warning('Missing API secret for ChipInAsia webhook validation');
+                return false;
+            }
 
-            return hash_equals($calculatedSignature, $signature);
+            // According to Chip In Asia documentation, they use HMAC SHA-256 for signature validation
+            // The signature is calculated using the raw request body
+            $payload = $request->getContent();
+            
+            // Calculate expected signature
+            $expectedSignature = hash_hmac('sha256', $payload, $apiSecret);
+            
+            // Compare signatures (case-insensitive comparison as per documentation)
+            return strtolower($expectedSignature) === strtolower($signature);
         }
 
         // For Billplz, validate the X-Signature
@@ -288,7 +297,7 @@ class PaymentGatewayController extends Controller
             return hash_equals($calculatedSignature, $xSignature);
         }
 
-        // For other gateways or development environment, return true
-        return true;
+        // Default to true for other gateways or in development
+        return !app()->environment('production');
     }
 }
