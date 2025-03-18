@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Make a Payment') }}
+            {{ __('khairat.make_payment') }}
         </h2>
     </x-slot>
 
@@ -12,7 +12,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                     </svg>
-                    {{ __('Back to Payments') }}
+                    {{ __('khairat.back_to_payments') }}
                 </a>
             </div>
             

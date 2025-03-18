@@ -1,12 +1,12 @@
 <div>
     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
         <div class="p-6 text-gray-900">
-            <h2 class="text-lg font-semibold mb-4">{{ __('Notification Preferences') }}</h2>
-            <p class="mb-4">{{ __('Manage how you receive notifications from the system.') }}</p>
+            <h2 class="text-lg font-semibold mb-4">{{ __('khairat.notification_preferences') }}</h2>
+            <p class="mb-4">{{ __('khairat.manage_notification_preferences') }}</p>
             
             @if ($saveSuccess)
             <div class="mb-4 p-4 bg-green-50 text-green-700 rounded-md">
-                {{ __('Your notification preferences have been saved successfully.') }}
+                {{ __('khairat.preferences_saved_success') }}
             </div>
             @endif
             
@@ -25,7 +25,7 @@
                                 class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                             >
                             <label for="email-{{ $key }}" class="ml-2 block text-sm text-gray-700">
-                                {{ __('Email') }}
+                                {{ __('khairat.email') }}
                             </label>
                         </div>
                         
@@ -37,7 +37,7 @@
                                 class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                             >
                             <label for="in-app-{{ $key }}" class="ml-2 block text-sm text-gray-700">
-                                {{ __('In-App') }}
+                                {{ __('khairat.in_app') }}
                             </label>
                         </div>
                         
@@ -49,7 +49,7 @@
                                 class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
                             >
                             <label for="sms-{{ $key }}" class="ml-2 block text-sm text-gray-700">
-                                {{ __('SMS') }}
+                                {{ __('khairat.sms') }}
                             </label>
                         </div>
                     </div>
@@ -59,8 +59,8 @@
             
             <div class="mt-6">
                 <x-primary-button wire:click="savePreferences" wire:loading.attr="disabled">
-                    <span wire:loading.remove wire:target="savePreferences">{{ __('Save Preferences') }}</span>
-                    <span wire:loading wire:target="savePreferences">{{ __('Saving...') }}</span>
+                    <span wire:loading.remove wire:target="savePreferences">{{ __('khairat.save_preferences') }}</span>
+                    <span wire:loading wire:target="savePreferences">{{ __('khairat.saving') }}</span>
                 </x-primary-button>
             </div>
         </div>

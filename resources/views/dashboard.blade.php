@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
+            {{ __('khairat.dashboard') }}
         </h2>
     </x-slot>
 
@@ -10,8 +10,8 @@
             <!-- Welcome Card -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6 bg-white border-b border-gray-200">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4">{{ __('Welcome back, :name!', ['name' => Auth::user()->name]) }}</h2>
-                    <p class="text-gray-600">{{ __('You are logged in to the Khairat Kematian Management System.') }}</p>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4">{{ __('khairat.welcome_back', ['name' => Auth::user()->name]) }}</h2>
+                    <p class="text-gray-600">{{ __('khairat.logged_in_message') }}</p>
                 </div>
             </div>
 
@@ -22,14 +22,14 @@
                         <div class="flex items-center mb-4">
                             <div class="bg-indigo-100 p-3 rounded-full mr-4">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 016 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
                             </div>
-                            <h3 class="text-lg font-medium text-gray-900">{{ __('My Profile') }}</h3>
+                            <h3 class="text-lg font-medium text-gray-900">{{ __('khairat.my_profile') }}</h3>
                         </div>
-                        <p class="text-sm text-gray-600 mb-4">{{ __('Manage your personal information and contact details.') }}</p>
+                        <p class="text-sm text-gray-600 mb-4">{{ __('khairat.manage_profile') }}</p>
                         <a href="{{ route('member.show') }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
-                            {{ __('View Profile') }} →
+                            {{ __('khairat.view_profile') }} →
                         </a>
                     </div>
                 </div>
@@ -43,13 +43,13 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                 </svg>
                             </div>
-                            <h3 class="text-lg font-medium text-gray-900">{{ __('Family Members') }}</h3>
+                            <h3 class="text-lg font-medium text-gray-900">{{ __('khairat.family_members') }}</h3>
                         </div>
                         
-                        <p class="text-sm text-gray-600 mb-2">{{ __('You have :count family members registered.', ['count' => Auth::user()->dependents->count()]) }}</p>
+                        <p class="text-sm text-gray-600 mb-2">{{ __('khairat.family_members_count', ['count' => Auth::user()->dependents->count()]) }}</p>
                         
                         <a href="{{ route('dependent.index') }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
-                            {{ __('Manage Family Members') }} →
+                            {{ __('khairat.manage_family_members') }} →
                         </a>
                     </div>
                 </div>
@@ -62,13 +62,13 @@
                         </svg>
                     </div>
                     <div>
-                        <div class="text-sm font-medium text-gray-500">{{ __('Membership Status') }}</div>
+                        <div class="text-sm font-medium text-gray-500">{{ __('khairat.membership_status') }}</div>
                         <div class="text-xl font-semibold {{ Auth::user()->isActive() ? 'text-green-600' : 'text-red-600' }}">
-                            {{ Auth::user()->isActive() ? __('Active') : __('Inactive') }}
+                            {{ Auth::user()->isActive() ? __('khairat.active') : __('khairat.inactive') }}
                         </div>
                         @if(Auth::user()->membership_expires_at)
                             <div class="text-xs text-gray-500 mt-1">
-                                {{ __('Expires') }}: {{ Auth::user()->membership_expires_at->format('d M Y') }}
+                                {{ __('khairat.expires') }}: {{ Auth::user()->membership_expires_at->format('d M Y') }}
                             </div>
                         @endif
                     </div>
@@ -78,12 +78,12 @@
             <!-- Recent Activity -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
-                    <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('Recent Activity') }}</h3>
+                    <h3 class="text-lg font-medium text-gray-900 mb-4">{{ __('khairat.recent_activity') }}</h3>
                     
                     <div class="border rounded-md overflow-hidden">
                         <div class="px-4 py-5 sm:p-6">
                             <!-- If no recent activity -->
-                            <p class="text-gray-500 text-sm">{{ __('No recent activity to show.') }}</p>
+                            <p class="text-gray-500 text-sm">{{ __('khairat.no_recent_activity') }}</p>
                             
                             <!-- For future implementation: Recent activity like payment history, profile updates, dependent changes, etc. -->
                         </div>

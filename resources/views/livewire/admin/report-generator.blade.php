@@ -1,34 +1,34 @@
 <div>
     <div class="mb-6 bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-        <h2 class="text-lg font-semibold mb-4">{{ __('Generate Reports') }}</h2>
+        <h2 class="text-lg font-semibold mb-4">{{ __('khairat.generate_report') }}</h2>
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
             <!-- Report Type Selection -->
             <div>
-                <x-input-label for="reportType" :value="__('Report Type')" />
+                <x-input-label for="reportType" :value="__('khairat.report_type')" />
                 <select id="reportType" wire:model.live="reportType" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                    <option value="payment-summary">{{ __('Payment Summary') }}</option>
-                    <option value="member-statistics">{{ __('Member Statistics') }}</option>
-                    <option value="payment-history">{{ __('Payment History') }}</option>
+                    <option value="payment-summary">{{ __('khairat.payment_summary') }}</option>
+                    <option value="member-statistics">{{ __('khairat.member_statistics') }}</option>
+                    <option value="payment-history">{{ __('khairat.payment_history') }}</option>
                 </select>
             </div>
             
             <!-- Date Range Selection -->
             <div>
-                <x-input-label for="dateRange" :value="__('Date Range')" />
+                <x-input-label for="dateRange" :value="__('khairat.date_range')" />
                 <select id="dateRange" wire:model.live="dateRange" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                    <option value="today">{{ __('Today') }}</option>
-                    <option value="this-week">{{ __('This Week') }}</option>
-                    <option value="this-month">{{ __('This Month') }}</option>
-                    <option value="this-year">{{ __('This Year') }}</option>
-                    <option value="last-month">{{ __('Last Month') }}</option>
-                    <option value="custom">{{ __('Custom Range') }}</option>
+                    <option value="today">{{ __('khairat.today') }}</option>
+                    <option value="this-week">{{ __('khairat.this_week') }}</option>
+                    <option value="this-month">{{ __('khairat.this_month') }}</option>
+                    <option value="this-year">{{ __('khairat.this_year') }}</option>
+                    <option value="last-month">{{ __('khairat.last_month') }}</option>
+                    <option value="custom">{{ __('khairat.custom_range') }}</option>
                 </select>
             </div>
             
             <!-- Export Format -->
             <div>
-                <x-input-label for="exportFormat" :value="__('Export Format')" />
+                <x-input-label for="exportFormat" :value="__('khairat.export_format')" />
                 <select id="exportFormat" wire:model="exportFormat" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
                     <option value="csv">CSV</option>
                     <option value="pdf">PDF</option>
@@ -40,11 +40,11 @@
         @if ($dateRange === 'custom')
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
-                <x-input-label for="startDate" :value="__('Start Date')" />
+                <x-input-label for="startDate" :value="__('khairat.start_date')" />
                 <x-text-input id="startDate" type="date" wire:model.live="startDate" class="mt-1 block w-full" />
             </div>
             <div>
-                <x-input-label for="endDate" :value="__('End Date')" />
+                <x-input-label for="endDate" :value="__('khairat.end_date')" />
                 <x-text-input id="endDate" type="date" wire:model.live="endDate" class="mt-1 block w-full" />
             </div>
         </div>
@@ -54,18 +54,18 @@
         @if ($reportType === 'payment-history')
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
             <div>
-                <x-input-label for="status" :value="__('Payment Status')" />
+                <x-input-label for="status" :value="__('khairat.payment_status')" />
                 <select id="status" wire:model.live="status" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                    <option value="">{{ __('All Statuses') }}</option>
+                    <option value="">{{ __('khairat.all_statuses') }}</option>
                     @foreach ($paymentStatuses as $paymentStatus)
                         <option value="{{ $paymentStatus->value }}">{{ __($paymentStatus->name) }}</option>
                     @endforeach
                 </select>
             </div>
             <div>
-                <x-input-label for="paymentType" :value="__('Payment Type')" />
+                <x-input-label for="paymentType" :value="__('khairat.payment_type')" />
                 <select id="paymentType" wire:model.live="paymentType" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                    <option value="">{{ __('All Types') }}</option>
+                    <option value="">{{ __('khairat.all_types') }}</option>
                     @foreach ($paymentTypes as $type)
                         <option value="{{ $type->value }}">{{ __($type->name) }}</option>
                     @endforeach
@@ -76,23 +76,23 @@
         
         <div class="flex items-center gap-4">
             <x-primary-button wire:click="generateReport" wire:loading.attr="disabled">
-                <span wire:loading.remove wire:target="generateReport">{{ __('Generate Report') }}</span>
-                <span wire:loading wire:target="generateReport">{{ __('Generating...') }}</span>
+                <span wire:loading.remove wire:target="generateReport">{{ __('khairat.generate_report') }}</span>
+                <span wire:loading wire:target="generateReport">{{ __('khairat.generating') }}</span>
             </x-primary-button>
             
             <x-secondary-button wire:click="exportReport" wire:loading.attr="disabled" class="ml-3">
-                <span wire:loading.remove wire:target="exportReport">{{ __('Export') }}</span>
-                <span wire:loading wire:target="exportReport">{{ __('Exporting...') }}</span>
+                <span wire:loading.remove wire:target="exportReport">{{ __('khairat.export') }}</span>
+                <span wire:loading wire:target="exportReport">{{ __('khairat.exporting') }}</span>
             </x-secondary-button>
         </div>
         
         @if ($generatedFilePath)
         <div class="mt-4 p-4 bg-green-50 text-green-700 rounded-md">
-            {{ __('Report generated successfully!') }} 
+            {{ __('khairat.report_generated') }}
             <a href="{{ str_replace(storage_path('app/public'), '/storage', $generatedFilePath) }}" 
                download="{{ $generatedFileName }}" 
                class="underline font-medium">
-                {{ __('Download') }} {{ $generatedFileName }}
+                {{ __('khairat.download') }} {{ $generatedFileName }}
             </a>
         </div>
         @endif
@@ -108,10 +108,10 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Payment Type') }}</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Status') }}</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Total Payments') }}</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Total Amount') }}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('khairat.payment_type') }}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('khairat.status') }}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('khairat.total_payments') }}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('khairat.total_amount') }}</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -140,13 +140,13 @@
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('ID') }}</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Member') }}</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Amount') }}</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Payment Method') }}</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Payment Type') }}</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Status') }}</th>
-                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('Date') }}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('khairat.id') }}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('khairat.member') }}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('khairat.amount') }}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('khairat.payment_method') }}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('khairat.payment_type') }}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('khairat.status') }}</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">{{ __('khairat.date') }}</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">

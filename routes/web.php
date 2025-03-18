@@ -4,10 +4,10 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\SystemSettingsController;
 use App\Http\Controllers\Member\DependentController;
 use App\Http\Controllers\Member\MemberController;
+use App\Http\Controllers\NotificationPreferenceController;
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Payment\PaymentGatewayController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\NotificationPreferenceController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -28,6 +28,21 @@ Route::middleware('auth')->group(function () {
 Route::get('/locale', function () {
     return 'Current locale: '.app()->getLocale();
 });
+
+// Language switch route
+Route::get('/language/{locale}', function ($locale) {
+    if (!in_array($locale, ['en', 'ms'])) {
+        abort(400);
+    }
+
+    session()->put('language', $locale);
+
+    if (\Illuminate\Support\Facades\Auth::check()) {
+        \Illuminate\Support\Facades\Auth::user()->update(['language' => $locale]);
+    }
+
+    return redirect()->back();
+})->name('language.switch');
 
 // Member Routes
 Route::middleware(['auth', 'verified'])->prefix('member')->name('member.')->group(function () {
@@ -96,7 +111,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/reports/payment-summary', [App\Http\Controllers\Admin\ReportController::class, 'paymentSummary'])->name('reports.payment-summary');
     Route::get('/reports/member-statistics', [App\Http\Controllers\Admin\ReportController::class, 'memberStatistics'])->name('reports.member-statistics');
     Route::get('/reports/payment-history', [App\Http\Controllers\Admin\ReportController::class, 'paymentHistory'])->name('reports.payment-history');
-    
+
     Route::get('/payment-verification', function () {
         return view('admin.payment-verification');
     })->name('payment-verification');

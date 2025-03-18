@@ -12,6 +12,36 @@ enum NotificationType: string
     case SYSTEM_NOTIFICATION = 'system_notification';
 
     /**
+     * Get the translation key for the notification type
+     *
+     * @return string The translation key
+     */
+    public function translationKey(): string
+    {
+        return 'khairat.notification_type_'.$this->value;
+    }
+
+    /**
+     * Get the translated display name for the notification type
+     *
+     * @return string The translated display name
+     */
+    public function translatedName(): string
+    {
+        return __($this->translationKey().'_name');
+    }
+
+    /**
+     * Get the translated description for the notification type
+     *
+     * @return string The translated description
+     */
+    public function translatedDescription(): string
+    {
+        return __($this->translationKey().'_description');
+    }
+
+    /**
      * Get the display name for the notification type
      *
      * @return string The display name

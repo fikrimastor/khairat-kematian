@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Notification Preferences') }}
+            {{ __('khairat.notification_preferences') }}
         </h2>
     </x-slot>
 
@@ -11,47 +11,47 @@
             
             <div class="mt-6 bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <h3 class="text-lg font-semibold mb-4">{{ __('Notification Channels') }}</h3>
+                    <h3 class="text-lg font-semibold mb-4">{{ __('khairat.notification_channels') }}</h3>
                     
                     <div class="space-y-4">
                         <div class="bg-gray-50 p-4 rounded-lg">
-                            <h4 class="font-medium text-gray-700">{{ __('Email Notifications') }}</h4>
+                            <h4 class="font-medium text-gray-700">{{ __('khairat.email_notifications') }}</h4>
                             <p class="text-sm text-gray-500 mt-1">
-                                {{ __('Email notifications are sent to your registered email address.') }}
-                                {{ __('Your current email address is:') }} <strong>{{ Auth::user()->email }}</strong>
+                                {{ __('khairat.email_notifications_description') }}
+                                {{ __('khairat.current_email') }} <strong>{{ Auth::user()->email }}</strong>
                             </p>
                             <div class="mt-2">
                                 <a href="{{ route('profile.edit') }}" class="text-sm text-indigo-600 hover:text-indigo-900">
-                                    {{ __('Update your email address') }}
+                                    {{ __('khairat.update_email') }}
                                 </a>
                             </div>
                         </div>
                         
                         <div class="bg-gray-50 p-4 rounded-lg">
-                            <h4 class="font-medium text-gray-700">{{ __('In-App Notifications') }}</h4>
+                            <h4 class="font-medium text-gray-700">{{ __('khairat.inapp_notifications') }}</h4>
                             <p class="text-sm text-gray-500 mt-1">
-                                {{ __('In-app notifications appear in your notification center within the application.') }}
+                                {{ __('khairat.inapp_notifications_description') }}
                             </p>
                             <div class="mt-2">
                                 <a href="{{ route('notifications.history') }}" class="text-sm text-indigo-600 hover:text-indigo-900">
-                                    {{ __('View your notification history') }}
+                                    {{ __('khairat.view_notification_history') }}
                                 </a>
                             </div>
                         </div>
                         
                         <div class="bg-gray-50 p-4 rounded-lg">
-                            <h4 class="font-medium text-gray-700">{{ __('SMS Notifications') }}</h4>
+                            <h4 class="font-medium text-gray-700">{{ __('khairat.sms_notifications') }}</h4>
                             <p class="text-sm text-gray-500 mt-1">
-                                {{ __('SMS notifications are sent to your registered phone number.') }}
+                                {{ __('khairat.sms_notifications_description') }}
                                 @if (Auth::user()->phone)
-                                    {{ __('Your current phone number is:') }} <strong>{{ Auth::user()->phone }}</strong>
+                                    {{ __('khairat.current_phone') }} <strong>{{ Auth::user()->phone }}</strong>
                                 @else
-                                    <span class="text-red-500">{{ __('You have not registered a phone number yet.') }}</span>
+                                    <span class="text-red-500">{{ __('khairat.no_phone_registered') }}</span>
                                 @endif
                             </p>
                             <div class="mt-2">
                                 <a href="{{ route('profile.edit') }}" class="text-sm text-indigo-600 hover:text-indigo-900">
-                                    {{ __('Update your phone number') }}
+                                    {{ __('khairat.update_phone') }}
                                 </a>
                             </div>
                         </div>

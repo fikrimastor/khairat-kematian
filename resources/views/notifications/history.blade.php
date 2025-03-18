@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Notification History') }}
+            {{ __('khairat.notification_history') }}
         </h2>
     </x-slot>
 
@@ -10,21 +10,21 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-lg font-semibold">{{ __('Your Notifications') }}</h3>
+                        <h3 class="text-lg font-semibold">{{ __('khairat.your_notifications') }}</h3>
                         
                         <div class="flex space-x-2">
                             <form action="{{ route('notifications.mark-all-read') }}" method="POST">
                                 @csrf
                                 <x-secondary-button type="submit">
-                                    {{ __('Mark All as Read') }}
+                                    {{ __('khairat.mark_all_as_read') }}
                                 </x-secondary-button>
                             </form>
                             
-                            <form action="{{ route('notifications.delete-all') }}" method="POST" onsubmit="return confirm('{{ __('Are you sure you want to delete all notifications?') }}')">
+                            <form action="{{ route('notifications.delete-all') }}" method="POST" onsubmit="return confirm('{{ __('khairat.confirm_delete_all_notifications') }}')">
                                 @csrf
                                 @method('DELETE')
                                 <x-danger-button type="submit">
-                                    {{ __('Delete All') }}
+                                    {{ __('khairat.delete_all') }}
                                 </x-danger-button>
                             </form>
                         </div>
@@ -38,7 +38,7 @@
                     
                     @if ($notifications->isEmpty())
                         <div class="text-center py-8">
-                            <p class="text-gray-500">{{ __('You have no notifications.') }}</p>
+                            <p class="text-gray-500">{{ __('khairat.no_notifications') }}</p>
                         </div>
                     @else
                         <div class="space-y-4">

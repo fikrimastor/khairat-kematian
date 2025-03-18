@@ -2,67 +2,88 @@
     <!-- Summary Statistics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         <!-- Total Members Card -->
-        <div class="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-blue-100 text-blue-500 mr-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        <div class="bg-white rounded-lg shadow-md p-4">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-gray-600 text-sm font-medium">{{ __('khairat.total_members') }}</h3>
+                <div class="p-2 bg-blue-100 rounded-full">
+                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                        </path>
                     </svg>
                 </div>
+            </div>
+            <div class="flex justify-between items-end">
                 <div>
-                    <p class="text-gray-500 text-sm">{{ __('Total Members') }}</p>
                     <p class="text-2xl font-bold">{{ $totalMembers }}</p>
                 </div>
+                <a href="{{ route('admin.members') }}"
+                    class="text-xs text-blue-500 hover:text-blue-700">{{ __('khairat.manage_members') }}</a>
             </div>
         </div>
 
         <!-- Active Members Card -->
-        <div class="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-green-100 text-green-500 mr-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <div class="bg-white rounded-lg shadow-md p-4">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-gray-600 text-sm font-medium">{{ __('khairat.active_members') }}</h3>
+                <div class="p-2 bg-green-100 rounded-full">
+                    <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
+            </div>
+            <div class="flex justify-between items-end">
                 <div>
-                    <p class="text-gray-500 text-sm">{{ __('Active Members') }}</p>
-                    <p class="text-2xl font-bold">{{ $activeMembers }}</p>
+                    <p class="text-2xl font-semibold">{{ $activeMembers }}</p>
+                    <p class="text-xs text-green-500">{{ number_format(($activeMembers / ($totalMembers ?: 1)) * 100, 0) }}% {{ __('khairat.total') }}</p>
                 </div>
             </div>
         </div>
 
         <!-- Pending Payments Card -->
-        <div class="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-500">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-yellow-100 text-yellow-500 mr-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <div class="bg-white rounded-lg shadow-md p-4">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-gray-600 text-sm font-medium">{{ __('khairat.pending_payments') }}</h3>
+                <div class="p-2 bg-yellow-100 rounded-full">
+                    <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                 </div>
+            </div>
+            <div class="flex justify-between items-end">
                 <div>
-                    <p class="text-gray-500 text-sm">{{ __('Pending Payments') }}</p>
-                    <p class="text-2xl font-bold">{{ $pendingPayments }}</p>
-                    @if($pendingPayments > 0)
-                        <a href="{{ route('admin.payment-verification') }}" class="text-sm text-yellow-600 hover:text-yellow-800 mt-1 inline-block">
-                            {{ __('Verify Payments') }} →
-                        </a>
-                    @endif
+                    <p class="text-2xl font-semibold">{{ $pendingPayments }}</p>
+                    <p class="text-xs text-yellow-500">{{ __('khairat.needs_verification') }}</p>
                 </div>
+                <a href="{{ route('admin.payment-verification') }}"
+                    class="text-xs text-blue-500 hover:text-blue-700">{{ __('khairat.verify_payments') }}</a>
             </div>
         </div>
 
         <!-- Total Revenue Card -->
-        <div class="bg-white rounded-lg shadow p-6 border-l-4 border-purple-500">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-purple-100 text-purple-500 mr-4">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <div class="bg-white rounded-lg shadow-md p-4">
+            <div class="flex justify-between items-center mb-2">
+                <h3 class="text-gray-600 text-sm font-medium">{{ __('khairat.total_revenue') }}</h3>
+                <div class="p-2 bg-purple-100 rounded-full">
+                    <svg class="w-5 h-5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z">
+                        </path>
                     </svg>
                 </div>
+            </div>
+            <div class="flex justify-between items-end">
                 <div>
-                    <p class="text-gray-500 text-sm">{{ __('Total Revenue') }}</p>
                     <p class="text-2xl font-bold">RM {{ number_format($totalRevenue, 2) }}</p>
                 </div>
+                <a href="{{ route('admin.reports') }}"
+                    class="text-xs text-blue-500 hover:text-blue-700">{{ __('khairat.generate_reports') }}</a>
             </div>
         </div>
     </div>
@@ -70,28 +91,28 @@
     <!-- Revenue Section -->
     <div class="bg-white rounded-lg shadow mb-8">
         <div class="p-6 border-b border-gray-200">
-            <h3 class="text-lg font-medium text-gray-900">{{ __('Revenue Overview') }}</h3>
+            <h3 class="text-lg font-medium text-gray-900">{{ __('khairat.revenue_overview') }}</h3>
             <div class="mt-4 flex space-x-4">
                 <button wire:click="setTimeframe('month')" class="px-4 py-2 rounded-md {{ $timeframe === 'month' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700' }}">
-                    {{ __('This Month') }}
+                    {{ __('khairat.this_month') }}
                 </button>
                 <button wire:click="setTimeframe('year')" class="px-4 py-2 rounded-md {{ $timeframe === 'year' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700' }}">
-                    {{ __('This Year') }}
+                    {{ __('khairat.this_year') }}
                 </button>
                 <button wire:click="setTimeframe('all')" class="px-4 py-2 rounded-md {{ $timeframe === 'all' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700' }}">
-                    {{ __('All Time') }}
+                    {{ __('khairat.all_time') }}
                 </button>
             </div>
         </div>
         <div class="p-6">
             <div class="text-center">
-                <p class="text-gray-500 text-sm">{{ __('Revenue') }} ({{ $timeframe === 'month' ? __('This Month') : ($timeframe === 'year' ? __('This Year') : __('All Time')) }})</p>
+                <p class="text-gray-500 text-sm">{{ __('khairat.revenue') }} ({{ $timeframe === 'month' ? __('khairat.this_month') : ($timeframe === 'year' ? __('khairat.this_year') : __('khairat.all_time')) }})</p>
                 <p class="text-3xl font-bold mt-2">RM {{ number_format($periodRevenue, 2) }}</p>
             </div>
             
             <!-- Monthly Trends Chart (Placeholder) -->
             <div class="mt-6 h-64 bg-gray-50 rounded-lg flex items-center justify-center">
-                <p class="text-gray-500">{{ __('Monthly revenue chart will be displayed here') }}</p>
+                <p class="text-gray-500">{{ __('khairat.monthly_revenue_chart') }}</p>
                 <!-- In a real implementation, you would use a chart library like Chart.js or ApexCharts -->
             </div>
         </div>
@@ -102,7 +123,7 @@
         <!-- Recent Payments -->
         <div class="lg:col-span-2 bg-white rounded-lg shadow">
             <div class="p-6 border-b border-gray-200">
-                <h3 class="text-lg font-medium text-gray-900">{{ __('Recent Payments') }}</h3>
+                <h3 class="text-lg font-medium text-gray-900">{{ __('khairat.recent_payments') }}</h3>
             </div>
             <div class="p-6">
                 <div class="overflow-x-auto">
@@ -110,16 +131,16 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    {{ __('Member') }}
+                                    {{ __('khairat.member') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    {{ __('Amount') }}
+                                    {{ __('khairat.amount') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    {{ __('Status') }}
+                                    {{ __('khairat.status') }}
                                 </th>
                                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    {{ __('Date') }}
+                                    {{ __('khairat.date') }}
                                 </th>
                             </tr>
                         </thead>
@@ -160,7 +181,7 @@
                             @empty
                                 <tr>
                                     <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">
-                                        {{ __('No recent payments found.') }}
+                                        {{ __('khairat.no_recent_payments') }}
                                     </td>
                                 </tr>
                             @endforelse
@@ -169,7 +190,7 @@
                 </div>
                 <div class="mt-4 text-right">
                     <a href="{{ route('payments.index') }}" class="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                        {{ __('View all payments') }} →
+                        {{ __('khairat.view_all_payments') }} →
                     </a>
                 </div>
             </div>
@@ -178,21 +199,24 @@
         <!-- System Settings -->
         <div class="bg-white rounded-lg shadow">
             <div class="p-6 border-b border-gray-200">
-                <h3 class="text-lg font-medium text-gray-900">{{ __('System Settings') }}</h3>
+                <h3 class="text-lg font-medium text-gray-900">{{ __('khairat.system_settings') }}</h3>
             </div>
             <div class="p-6">
                 <div class="space-y-4">
+{{--                    <div>--}}
+{{--                        <h4 class="text-sm font-medium text-gray-500">{{ __('khairat.organization') }}</h4>--}}
+{{--                        <p class="text-lg font-semibold">{{ $organizationName }}</p>--}}
+{{--                        <p class="text-lg font-semibold">{{ $organizationAddress }}</p>--}}
+{{--                        <p class="text-lg font-semibold">{{ $organizationPhone }}</p>--}}
+{{--                    </div>--}}
                     <div>
-                        <h4 class="text-sm font-medium text-gray-500">{{ __('Registration Fee') }}</h4>
-                        <p class="text-lg font-semibold">RM {{ number_format($registrationFee, 2) }}</p>
-                    </div>
-                    <div>
-                        <h4 class="text-sm font-medium text-gray-500">{{ __('Renewal Fee') }}</h4>
-                        <p class="text-lg font-semibold">RM {{ number_format($renewalFee, 2) }}</p>
+                        <h4 class="text-sm font-medium text-gray-500">{{ __('khairat.payment') }}</h4>
+                        <p class="text-lg font-semibold">{{ __('khairat.registration_fee') }}: RM {{ number_format($registrationFee, 2) }}</p>
+                        <p class="text-lg font-semibold">{{ __('khairat.renewal_fee') }}: RM {{ number_format($renewalFee, 2) }}</p>
                     </div>
                     <div class="pt-4 border-t border-gray-200">
                         <a href="{{ route('admin.settings') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-blue-700 focus:bg-blue-700 active:bg-blue-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                            {{ __('Manage Settings') }}
+                            {{ __('khairat.manage_settings') }}
                         </a>
                     </div>
                 </div>
@@ -203,7 +227,7 @@
     <!-- Quick Actions -->
     <div class="mt-8 bg-white rounded-lg shadow">
         <div class="p-6 border-b border-gray-200">
-            <h3 class="text-lg font-medium text-gray-900">{{ __('Quick Actions') }}</h3>
+            <h3 class="text-lg font-medium text-gray-900">{{ __('khairat.quick_actions') }}</h3>
         </div>
         <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-4">
             <a href="{{ route('admin.payment-verification') }}" class="flex items-center p-4 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors">
@@ -213,8 +237,8 @@
                     </svg>
                 </div>
                 <div>
-                    <p class="font-medium">{{ __('Verify Payments') }}</p>
-                    <p class="text-sm text-gray-500">{{ __('Review and verify pending payments') }}</p>
+                    <p class="font-medium">{{ __('khairat.verify_payments') }}</p>
+                    <p class="text-sm text-gray-500">{{ __('khairat.review_verify_payments') }}</p>
                 </div>
             </a>
             <a href="{{ route('admin.members') }}" class="flex items-center p-4 bg-green-50 rounded-lg hover:bg-green-100 transition-colors">
@@ -224,8 +248,8 @@
                     </svg>
                 </div>
                 <div>
-                    <p class="font-medium">{{ __('Manage Members') }}</p>
-                    <p class="text-sm text-gray-500">{{ __('View and manage member accounts') }}</p>
+                    <p class="font-medium">{{ __('khairat.manage_members') }}</p>
+                    <p class="text-sm text-gray-500">{{ __('khairat.view_manage_accounts') }}</p>
                 </div>
             </a>
             <a href="{{ route('admin.reports') }}" class="flex items-center p-4 bg-purple-50 rounded-lg hover:bg-purple-100 transition-colors">
@@ -235,8 +259,8 @@
                     </svg>
                 </div>
                 <div>
-                    <p class="font-medium">{{ __('Generate Reports') }}</p>
-                    <p class="text-sm text-gray-500">{{ __('Create and download reports') }}</p>
+                    <p class="font-medium">{{ __('khairat.generate_reports') }}</p>
+                    <p class="text-sm text-gray-500">{{ __('khairat.create_download_reports') }}</p>
                 </div>
             </a>
         </div>

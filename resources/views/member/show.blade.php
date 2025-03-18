@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Member Profile') }}
+            {{ __('khairat.member_profile') }}
         </h2>
     </x-slot>
 
@@ -36,7 +36,7 @@
                         </svg>
                     </div>
                     <div>
-                        <div class="text-sm font-medium text-gray-500">{{ __('Total Family Members') }}</div>
+                        <div class="text-sm font-medium text-gray-500">{{ __('khairat.total_family_members') }}</div>
                         <div class="text-xl font-semibold">{{ $dependents->count() }}</div>
                     </div>
                 </div>
@@ -49,9 +49,9 @@
                         </svg>
                     </div>
                     <div>
-                        <div class="text-sm font-medium text-gray-500">{{ __('Account Status') }}</div>
+                        <div class="text-sm font-medium text-gray-500">{{ __('khairat.membership_status') }}</div>
                         <div class="text-xl font-semibold {{ $user->isActive() ? 'text-green-600' : 'text-red-600' }}">
-                            {{ $user->isActive() ? __('Active') : __('Inactive') }}
+                            {{ $user->isActive() ? __('khairat.active') : __('khairat.inactive') }}
                         </div>
                     </div>
                 </div>
@@ -64,7 +64,7 @@
                         </svg>
                     </div>
                     <div>
-                        <div class="text-sm font-medium text-gray-500">{{ __('Member Since') }}</div>
+                        <div class="text-sm font-medium text-gray-500">{{ __('khairat.member_since') }}</div>
                         <div class="text-xl font-semibold">{{ $user->created_at->format('d M Y') }}</div>
                     </div>
                 </div>
@@ -77,8 +77,8 @@
                         </svg>
                     </div>
                     <div>
-                        <div class="text-sm font-medium text-gray-500">{{ __('Payment Status') }}</div>
-                        <div class="text-xl font-semibold">{{ __('Current') }}</div>
+                        <div class="text-sm font-medium text-gray-500">{{ __('khairat.payment_status') }}</div>
+                        <div class="text-xl font-semibold">{{ __('khairat.current') }}</div>
                     </div>
                 </div>
             </div>
@@ -87,13 +87,13 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6 bg-white border-b border-gray-200">
                     <div class="flex justify-between items-center mb-4">
-                        <h3 class="text-lg font-medium leading-6 text-gray-900">{{ __('Personal Information') }}</h3>
+                        <h3 class="text-lg font-medium leading-6 text-gray-900">{{ __('khairat.personal_information') }}</h3>
                         <div class="flex space-x-2">
                             <a href="{{ route('member.change-password') }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                {{ __('Change Password') }}
+                                {{ __('khairat.change_password') }}
                             </a>
                             <a href="{{ route('member.edit') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                                {{ __('Edit Profile') }}
+                                {{ __('khairat.edit_profile') }}
                             </a>
                         </div>
                     </div>
@@ -102,16 +102,16 @@
                         <div>
                             <dl>
                                 <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 rounded-t-md">
-                                    <dt class="text-sm font-medium text-gray-500">{{ __('Full Name') }}</dt>
+                                    <dt class="text-sm font-medium text-gray-500">{{ __('khairat.full_name') }}</dt>
                                     <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ $user->name }}</dd>
                                 </div>
                                 <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                    <dt class="text-sm font-medium text-gray-500">{{ __('Email Address') }}</dt>
+                                    <dt class="text-sm font-medium text-gray-500">{{ __('khairat.email_address') }}</dt>
                                     <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ $user->email }}</dd>
                                 </div>
                                 <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                    <dt class="text-sm font-medium text-gray-500">{{ __('Phone Number') }}</dt>
-                                    <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ $user->phone ?? __('Not provided') }}</dd>
+                                    <dt class="text-sm font-medium text-gray-500">{{ __('khairat.phone_number') }}</dt>
+                                    <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ $user->phone ?? __('khairat.not_provided') }}</dd>
                                 </div>
                             </dl>
                         </div>
@@ -119,17 +119,17 @@
                         <div>
                             <dl>
                                 <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6 rounded-t-md">
-                                    <dt class="text-sm font-medium text-gray-500">{{ __('ID Number') }}</dt>
-                                    <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ $user->identification_number ?? __('Not provided') }}</dd>
+                                    <dt class="text-sm font-medium text-gray-500">{{ __('khairat.identification') }}</dt>
+                                    <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ $user->identification_number ?? __('khairat.not_provided') }}</dd>
                                 </div>
                                 <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                    <dt class="text-sm font-medium text-gray-500">{{ __('Address') }}</dt>
-                                    <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ $user->address ?? __('Not provided') }}</dd>
+                                    <dt class="text-sm font-medium text-gray-500">{{ __('khairat.address') }}</dt>
+                                    <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">{{ $user->address ?? __('khairat.not_provided') }}</dd>
                                 </div>
                                 <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                                    <dt class="text-sm font-medium text-gray-500">{{ __('Language') }}</dt>
+                                    <dt class="text-sm font-medium text-gray-500">{{ __('khairat.language') }}</dt>
                                     <dd class="mt-1 text-sm text-gray-900 sm:col-span-2 sm:mt-0">
-                                        {{ $user->language == 'ms' ? __('Bahasa Malaysia') : __('English') }}
+                                        {{ $user->language == 'ms' ? __('khairat.malay_language') : __('khairat.english_language') }}
                                     </dd>
                                 </div>
                             </dl>
@@ -145,12 +145,12 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="bg-white px-4 py-5 border-b border-gray-200 sm:px-6">
                     <div class="flex justify-between items-center">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900">{{ __('Family Members') }}</h3>
+                        <h3 class="text-lg leading-6 font-medium text-gray-900">{{ __('khairat.family_members') }}</h3>
                         <a href="{{ route('dependent.create') }}" class="inline-flex items-center px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">
-                            {{ __('Add Family Member') }}
+                            {{ __('khairat.add_family_member') }}
                         </a>
                     </div>
-                    <p class="mt-1 max-w-2xl text-sm text-gray-500">{{ __('All your registered family members.') }}</p>
+                    <p class="mt-1 max-w-2xl text-sm text-gray-500">{{ __('khairat.all_family_members') }}</p>
                 </div>
 
                 <div class="p-6">
@@ -159,14 +159,14 @@
                             <svg xmlns="http://www.w3.org/2000/svg" class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                             </svg>
-                            <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('No family members') }}</h3>
-                            <p class="mt-1 text-sm text-gray-500">{{ __('Get started by adding a family member.') }}</p>
+                            <h3 class="mt-2 text-sm font-medium text-gray-900">{{ __('khairat.no_family_members_message') }}</h3>
+                            <p class="mt-1 text-sm text-gray-500">{{ __('khairat.get_started_family') }}</p>
                             <div class="mt-6">
                                 <a href="{{ route('dependent.create') }}" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                                     <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                     </svg>
-                                    {{ __('Add Family Member') }}
+                                    {{ __('khairat.add_family_member') }}
                                 </a>
                             </div>
                         </div>
@@ -176,19 +176,19 @@
                                 <thead class="bg-gray-50">
                                     <tr>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            {{ __('Name') }}
+                                            {{ __('khairat.name') }}
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            {{ __('Relationship') }}
+                                            {{ __('khairat.relationship') }}
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            {{ __('ID Number') }}
+                                            {{ __('khairat.identification') }}
                                         </th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            {{ __('Birth Date') }}
+                                            {{ __('khairat.birth_date') }}
                                         </th>
                                         <th scope="col" class="relative px-6 py-3">
-                                            <span class="sr-only">{{ __('Edit') }}</span>
+                                            <span class="sr-only">{{ __('khairat.edit') }}</span>
                                         </th>
                                     </tr>
                                 </thead>
@@ -211,7 +211,7 @@
                                             </td>
                                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                 <a href="{{ route('dependent.edit', $dependent) }}" class="text-indigo-600 hover:text-indigo-900">
-                                                    {{ __('Edit') }}
+                                                    {{ __('khairat.edit') }}
                                                 </a>
                                             </td>
                                         </tr>
