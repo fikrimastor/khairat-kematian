@@ -121,7 +121,7 @@ class PaymentForm extends Component
             ]);
 
             // Process payment through gateway if needed
-            if (in_array($this->paymentMethod, [PaymentMethod::ChipInAsia->value, PaymentMethod::Billplz->value])) {
+            if (in_array($this->paymentMethod, [PaymentMethod::CHIP_IN_ASIA->value, PaymentMethod::Billplz->value])) {
                 return $this->processOnlinePayment($payment, $user);
             } else {
                 return $this->processManualPayment($payment);
@@ -155,13 +155,13 @@ class PaymentForm extends Component
             $gatewayFactory = new PaymentGatewayFactory;
 
             // Determine which gateway to use based on payment method
-            $gatewayName = match ($this->paymentMethod) {
-                PaymentMethod::ChipInAsia->value => 'chipin',
-                PaymentMethod::Billplz->value => 'billplz',
+            $paymentMethodEnum = match ($this->paymentMethod) {
+                PaymentMethod::CHIP_IN_ASIA->value => PaymentMethod::CHIP_IN_ASIA,
+                PaymentMethod::Billplz->value => PaymentMethod::Billplz,
                 default => throw new \Exception('Unsupported online payment method')
             };
 
-            $gateway = $gatewayFactory->make($gatewayName);
+            $gateway = $gatewayFactory->make($paymentMethodEnum);
 
             $result = $gateway->processPayment([
                 'amount' => $this->amount,
@@ -182,7 +182,7 @@ class PaymentForm extends Component
                     'payment_id' => $payment->id,
                     'transaction_id' => $result['transaction_id'],
                     'status' => PaymentStatus::PROCESSING,
-                    'gateway' => $gatewayName,
+                    'gateway' => $this->paymentMethod,
                 ]);
 
                 $this->showProcessingModal = false;
@@ -218,9 +218,12 @@ class PaymentForm extends Component
     {
         try {
             // For bank transfers, get the payment details
-            if ($this->paymentMethod === PaymentMethod::BankTransfer->value) {
+            if ($this->paymentMethod === PaymentMethod::BANK_TRANSFER->value) {
                 $gatewayFactory = new PaymentGatewayFactory;
-                $gateway = $gatewayFactory->make('banktransfer');
+
+                // Convert string to PaymentMethod enum
+                $methodEnum = PaymentMethod::from($this->paymentMethod);
+                $gateway = $gatewayFactory->make($methodEnum);
 
                 $result = $gateway->getPaymentUrl([
                     'amount' => $this->amount,

@@ -23,10 +23,14 @@ class SystemSettingsController extends Controller
     {
         $request->validate([
             'value' => 'required|string',
+            'description' => 'nullable|string',
         ]);
 
         $setting = SystemSetting::where('key', $key)->firstOrFail();
-        $setting->update(['value' => $request->value]);
+        $setting->update([
+            'value' => $request->value,
+            'description' => $request->description ?? $setting->description,
+        ]);
 
         return back()->with('success', __('Setting updated successfully.'));
     }

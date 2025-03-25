@@ -71,11 +71,25 @@
                                     {{ $payment->month }} {{ $payment->year }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    {{ \App\Enums\PaymentMethod::from($payment->payment_method)->label() }}
+                                    @if ($payment->payment_method instanceof \App\Enums\PaymentMethod)
+                                        {{ $payment->payment_method->label() }}
+                                    @else
+                                        {{ \App\Enums\PaymentMethod::from($payment->payment_method)->label() }}
+                                    @endif
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-{{ \App\Enums\PaymentStatus::from($payment->status)->color() }}-100 text-{{ \App\Enums\PaymentStatus::from($payment->status)->color() }}-800">
-                                        {{ \App\Enums\PaymentStatus::from($payment->status)->label() }}
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
+                                        @if ($payment->status instanceof \App\Enums\PaymentStatus)
+                                            bg-{{ $payment->status->color() }}-100 text-{{ $payment->status->color() }}-800
+                                        @else
+                                            bg-{{ \App\Enums\PaymentStatus::from($payment->status)->color() }}-100 text-{{ \App\Enums\PaymentStatus::from($payment->status)->color() }}-800
+                                        @endif
+                                    ">
+                                        @if ($payment->status instanceof \App\Enums\PaymentStatus)
+                                            {{ $payment->status->label() }}
+                                        @else
+                                            {{ \App\Enums\PaymentStatus::from($payment->status)->label() }}
+                                        @endif
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -136,7 +150,13 @@
                                         </div>
                                         <div>
                                             <p class="text-sm text-gray-500">{{ __('Payment Method') }}</p>
-                                            <p class="text-sm font-medium">{{ \App\Enums\PaymentMethod::from($selectedPayment->payment_method)->label() }}</p>
+                                            <p class="text-sm font-medium">
+                                                @if ($selectedPayment->payment_method instanceof \App\Enums\PaymentMethod)
+                                                    {{ $selectedPayment->payment_method->label() }}
+                                                @else
+                                                    {{ \App\Enums\PaymentMethod::from($selectedPayment->payment_method)->label() }}
+                                                @endif
+                                            </p>
                                         </div>
                                         <div>
                                             <p class="text-sm text-gray-500">{{ __('Reference No') }}</p>

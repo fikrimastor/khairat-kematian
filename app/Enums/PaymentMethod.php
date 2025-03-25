@@ -4,8 +4,8 @@ namespace App\Enums;
 
 enum PaymentMethod: string
 {
-    case BankTransfer = 'bank_transfer';
-    case ChipInAsia = 'chipin_asia';
+    case BANK_TRANSFER = 'bank_transfer';
+    case CHIP_IN_ASIA = 'chip_in_asia';
     case Billplz = 'billplz';
     case Cash = 'cash';
 
@@ -29,8 +29,8 @@ enum PaymentMethod: string
     public static function getLabel(self $method): string
     {
         return match ($method) {
-            self::BankTransfer => 'Pindahan Bank',
-            self::ChipInAsia => 'Pembayaran Dalam Talian (ChipIn Asia)',
+            self::BANK_TRANSFER => 'Pindahan Bank',
+            self::CHIP_IN_ASIA => 'Pembayaran Dalam Talian (ChipIn Asia)',
             self::Billplz => 'Pembayaran Dalam Talian (Billplz)',
             self::Cash => 'Tunai',
         };
@@ -49,7 +49,7 @@ enum PaymentMethod: string
      */
     public function requiresReceipt(): bool
     {
-        return $this === self::BankTransfer;
+        return $this === self::BANK_TRANSFER;
     }
 
     /**
@@ -57,7 +57,7 @@ enum PaymentMethod: string
      */
     public function isOnline(): bool
     {
-        return in_array($this, [self::ChipInAsia, self::Billplz]);
+        return in_array($this, [self::CHIP_IN_ASIA, self::Billplz]);
     }
 
     /**
@@ -65,7 +65,7 @@ enum PaymentMethod: string
      */
     public function requiresVerification(): bool
     {
-        return in_array($this, [self::BankTransfer, self::Cash]);
+        return in_array($this, [self::BANK_TRANSFER, self::Cash]);
     }
 
     /**
@@ -74,8 +74,8 @@ enum PaymentMethod: string
     public function icon(): string
     {
         return match ($this) {
-            self::BankTransfer => 'fas fa-university',
-            self::ChipInAsia => 'fas fa-credit-card',
+            self::BANK_TRANSFER => 'fas fa-university',
+            self::CHIP_IN_ASIA => 'fas fa-credit-card',
             self::Billplz => 'fas fa-credit-card',
             self::Cash => 'fas fa-money-bill-wave',
         };

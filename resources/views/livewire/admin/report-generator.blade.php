@@ -101,7 +101,7 @@
     <!-- Report Preview -->
     @if (!$reportData->isEmpty())
     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
-        <h2 class="text-lg font-semibold mb-4">{{ __('Report Preview') }}</h2>
+        <h2 class="text-lg font-semibold mb-4">{{ __('khairat.report_preview') }}</h2>
         
         @if ($reportType === 'payment-summary')
             <div class="overflow-x-auto">

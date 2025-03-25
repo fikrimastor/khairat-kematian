@@ -55,11 +55,11 @@ class Receipt extends Model
      */
     public static function generateReceiptNumber(): string
     {
-        $prefix = 'RESIT';
-        $date = now()->format('Ymd');
-        $random = mt_rand(1000, 9999);
+        $prefix = 'R';
+        $year = now()->format('Y');
+        $sequence = str_pad(static::count() + 1, 6, '0', STR_PAD_LEFT);
 
-        return "{$prefix}-{$date}-{$random}";
+        return "{$prefix}-{$year}-{$sequence}";
     }
 
     /**

@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Receipts') }}
+            {{ __('khairat.receipts') }}
         </h2>
     </x-slot>
 
@@ -21,19 +21,19 @@
                                 <thead>
                                     <tr>
                                         <th class="py-3 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                            {{ __('Receipt Number') }}
+                                            {{ __('khairat.receipt_number') }}
                                         </th>
                                         <th class="py-3 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                            {{ __('Member') }}
+                                            {{ __('khairat.member') }}
                                         </th>
                                         <th class="py-3 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                            {{ __('Amount') }}
+                                            {{ __('khairat.amount') }}
                                         </th>
                                         <th class="py-3 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                            {{ __('Date') }}
+                                            {{ __('khairat.date') }}
                                         </th>
                                         <th class="py-3 px-4 border-b border-gray-200 bg-gray-50 text-left text-xs leading-4 font-medium text-gray-500 uppercase tracking-wider">
-                                            {{ __('Actions') }}
+                                            {{ __('khairat.actions') }}
                                         </th>
                                     </tr>
                                 </thead>
@@ -55,11 +55,11 @@
                                             <td class="py-4 px-4 border-b border-gray-200 text-sm">
                                                 <div class="flex space-x-2">
                                                     <a href="{{ route('receipts.show', $receipt) }}" class="text-blue-600 hover:text-blue-900">
-                                                        {{ __('View') }}
+                                                        {{ __('khairat.view') }}
                                                     </a>
                                                     @if($receipt->receipt_path)
                                                         <a href="{{ route('receipts.download', $receipt) }}" class="text-green-600 hover:text-green-900">
-                                                            {{ __('Download') }}
+                                                            {{ __('khairat.download') }}
                                                         </a>
                                                     @endif
                                                 </div>
@@ -75,7 +75,7 @@
                         </div>
                     @else
                         <div class="text-center py-8">
-                            <p class="text-gray-500">{{ __('No receipts found.') }}</p>
+                            <p class="text-gray-500">{{ __('khairat.no_receipts_found') }}</p>
                         </div>
                     @endif
                 </div>

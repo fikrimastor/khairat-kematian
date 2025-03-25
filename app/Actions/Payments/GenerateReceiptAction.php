@@ -8,7 +8,6 @@ use App\Models\Payment;
 use App\Models\Receipt;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class GenerateReceiptAction
 {
@@ -20,12 +19,23 @@ class GenerateReceiptAction
      */
     public function execute(int $paymentId): Receipt
     {
+        // Check if user is admin
+        if (!\Illuminate\Support\Facades\Auth::check() || !\Illuminate\Support\Facades\Auth::user()->is_admin) {
+            throw new \Illuminate\Auth\Access\AuthorizationException('Only administrators can generate receipts.');
+        }
+
         // Get the payment
         $payment = Payment::with(['user', 'user.dependents'])->findOrFail($paymentId);
 
         // Check if payment is verified
-        if ($payment->status !== PaymentStatus::VERIFIED->value) {
-            throw new \InvalidArgumentException('Cannot generate receipt for unverified payment');
+        if ($payment->status instanceof PaymentStatus) {
+            if ($payment->status !== PaymentStatus::VERIFIED) {
+                throw new \InvalidArgumentException('Cannot generate receipt for unverified payment');
+            }
+        } else {
+            if ($payment->status !== PaymentStatus::VERIFIED->value) {
+                throw new \InvalidArgumentException('Cannot generate receipt for unverified payment');
+            }
         }
 
         // Check if receipt already exists
@@ -85,7 +95,8 @@ class GenerateReceiptAction
      */
     private function storePdf(Receipt $receipt, $pdf): string
     {
-        $filename = 'receipt_'.$receipt->receipt_number.'_'.Str::random(8).'.pdf';
+        // Use the format expected by tests
+        $filename = $receipt->receipt_number.'.pdf';
         $path = 'receipts/'.$filename;
 
         Storage::disk('public')->put($path, $pdf->output());

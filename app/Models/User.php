@@ -81,6 +81,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the user's payments
+     */
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
+    }
+
+    /**
      * Check if the user's membership is active
      */
     public function isActive(): bool

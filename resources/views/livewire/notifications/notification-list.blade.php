@@ -3,7 +3,7 @@
         <div class="p-4">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold text-gray-900">
-                    {{ __('Notifications') }}
+                    {{ __('khairat.notifications') }}
                     @if ($unreadCount > 0)
                         <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                             {{ $unreadCount }}
@@ -13,14 +13,14 @@
                 <div class="flex space-x-2">
                     @if ($unreadCount > 0)
                         <button wire:click="markAllAsRead" class="text-sm text-blue-600 hover:text-blue-800">
-                            {{ __('Mark all as read') }}
+                            {{ __('khairat.mark_all_as_read') }}
                         </button>
                     @endif
                     <button wire:click="toggleShowAll" class="text-sm text-gray-600 hover:text-gray-800">
                         @if ($showAll)
-                            {{ __('Show less') }}
+                            {{ __('khairat.show_less') }}
                         @else
-                            {{ __('Show all') }}
+                            {{ __('khairat.show_all') }}
                         @endif
                     </button>
                 </div>
@@ -28,7 +28,7 @@
 
             @if ($notifications->isEmpty())
                 <div class="text-center py-4 text-gray-500">
-                    {{ __('No notifications') }}
+                    {{ __('khairat.no_notifications') }}
                 </div>
             @else
                 <div class="space-y-4">
@@ -71,7 +71,7 @@
                                             @if (isset($notification->data['message']))
                                                 {{ $notification->data['message'] }}
                                             @elseif (isset($notification->data['amount']))
-                                                {{ __('Amount') }}: RM {{ number_format($notification->data['amount'], 2) }}
+                                                {{ __('khairat.amount') }}: RM {{ number_format($notification->data['amount'], 2) }}
                                             @endif
                                         </p>
                                         <p class="mt-1 text-xs text-gray-500">
@@ -80,7 +80,7 @@
                                     </div>
                                     @if (is_null($notification->read_at))
                                         <button wire:click="markAsRead('{{ $notification->id }}')" class="text-xs text-blue-600 hover:text-blue-800">
-                                            {{ __('Mark as read') }}
+                                            {{ __('khairat.mark_as_read') }}
                                         </button>
                                     @endif
                                 </div>

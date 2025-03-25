@@ -1,5 +1,4 @@
 <div>
-    @dd($this->languages)
     <div class="sm:mx-auto sm:w-full sm:max-w-md">
         <h2 class="mt-6 text-center text-2xl font-extrabold text-gray-900">
             {{ __('Register for Khairat Kematian') }}

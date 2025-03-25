@@ -29,6 +29,10 @@ class PaymentVerification extends Component
 
     public function mount()
     {
+        if (!Auth::check() || !Auth::user()->is_admin) {
+            throw new \Illuminate\Auth\Access\AuthorizationException('This action is unauthorized.');
+        }
+
         $this->status = 'pending';
     }
 

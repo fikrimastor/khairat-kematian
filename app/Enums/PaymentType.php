@@ -6,6 +6,7 @@ enum PaymentType: string
 {
     case REGISTRATION = 'registration';
     case RENEWAL = 'renewal';
+    case CONTRIBUTION = 'contribution';
 
     /**
      * Get the display name for the payment type
@@ -17,6 +18,7 @@ enum PaymentType: string
         return match ($this) {
             self::REGISTRATION => 'Yuran Pendaftaran',
             self::RENEWAL => 'Yuran Pembaharuan',
+            self::CONTRIBUTION => 'Kontribusi',
         };
     }
 

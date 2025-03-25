@@ -31,6 +31,12 @@ class VerifyPaymentAction
      */
     public function execute(int $paymentId, int $adminId, bool $isApproved, ?string $notes = null): Payment
     {
+        // Check if the user is an admin
+        $adminUser = \App\Models\User::findOrFail($adminId);
+        if (!$adminUser->is_admin) {
+            throw new \Illuminate\Auth\Access\AuthorizationException('Only administrators can verify payments.');
+        }
+
         return DB::transaction(function () use ($paymentId, $adminId, $isApproved, $notes) {
             $payment = Payment::findOrFail($paymentId);
 
@@ -43,7 +49,7 @@ class VerifyPaymentAction
                 ]);
 
                 // Generate receipt
-                $receipt = $this->generateReceiptAction->execute($payment);
+                $receipt = $this->generateReceiptAction->execute($payment->id);
 
                 // Notify user
                 $payment->user->notify(new PaymentConfirmedNotification($payment, $receipt));

@@ -2,8 +2,7 @@
 
 namespace App\Services\Payment\Providers;
 
-use App\Services\Payment\Contracts\PaymentGatewayInterface;
-use Illuminate\Support\Facades\Log;
+use App\Enums\PaymentStatus;
 
 class BankTransferGateway implements PaymentGatewayInterface
 {
@@ -11,38 +10,20 @@ class BankTransferGateway implements PaymentGatewayInterface
      * Process a payment through bank transfer
      * For bank transfers, we just record the payment intent
      *
-     * @param  array  $paymentData  Payment data including amount, reference, etc.
-     * @return array Response for the bank transfer
+     * @param  array  $data  The payment data
+     * @return array The processing result
      */
-    public function processPayment(array $paymentData): array
+    public function processPayment(array $data): array
     {
-        // For bank transfers, we just create a record of the payment intent
-        // The actual verification happens when an admin confirms the receipt
+        // Generate a transaction ID
+        $transactionId = 'BTF'.date('YmdHis').rand(1000, 9999);
 
-        try {
-            // Generate a unique reference number for this bank transfer
-            $transactionId = 'BT-'.date('YmdHis').'-'.substr(uniqid(), -6);
-
-            return [
-                'success' => true,
-                'transaction_id' => $transactionId,
-                'status' => 'pending', // Bank transfers are pending until admin verification
-                'bank_details' => $this->getBankDetails(),
-                'amount' => $paymentData['amount'],
-                'reference' => $paymentData['reference'] ?? null,
-            ];
-        } catch (\Exception $e) {
-            Log::error('Bank transfer processing exception', [
-                'message' => $e->getMessage(),
-                'payment_data' => $paymentData,
-            ]);
-
-            return [
-                'success' => false,
-                'status' => 'failed',
-                'error' => 'Failed to process bank transfer: '.$e->getMessage(),
-            ];
-        }
+        // For bank transfers, we mark the payment as pending and await verification
+        return [
+            'transaction_id' => $transactionId,
+            'status' => PaymentStatus::PENDING,
+            'success' => true,
+        ];
     }
 
     /**
@@ -95,9 +76,9 @@ class BankTransferGateway implements PaymentGatewayInterface
             return [
                 'type' => 'bank_transfer',
                 'transaction_id' => $result['transaction_id'],
-                'bank_details' => $result['bank_details'],
-                'amount' => $result['amount'],
-                'reference' => $result['reference'],
+                'bank_details' => $this->getBankDetails(),
+                'amount' => $paymentData['amount'],
+                'reference' => $paymentData['reference'],
                 'instructions' => 'Please transfer the exact amount to the bank account provided. '.
                     'Include the reference number in your transfer details. '.
                     'After making the payment, upload your receipt for verification.',
@@ -106,5 +87,20 @@ class BankTransferGateway implements PaymentGatewayInterface
 
         throw new \RuntimeException('Failed to generate bank transfer instructions: '.
             ($result['error'] ?? 'Unknown error'));
+    }
+
+    /**
+     * Validate signature from webhook
+     * For bank transfers, this is not applicable but we implement it for interface compliance
+     *
+     * @param  array  $payload
+     * @param  string  $signature
+     * @return bool
+     */
+    public function validateSignature(array $payload, string $signature): bool
+    {
+        // Bank transfers don't have webhook signatures, but we need to implement this method
+        // Always return false as we don't support automatic validation for bank transfers
+        return false;
     }
 }
