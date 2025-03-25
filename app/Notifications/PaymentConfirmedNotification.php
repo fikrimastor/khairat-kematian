@@ -2,14 +2,14 @@
 
 namespace App\Notifications;
 
+use App\Enums\NotificationType;
 use App\Models\Payment;
 use App\Models\Receipt;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
-use Illuminate\Notifications\Notification;
 
-class PaymentConfirmedNotification extends Notification implements ShouldQueue
+class PaymentConfirmedNotification extends BaseNotification
 {
     use Queueable;
 
@@ -22,13 +22,11 @@ class PaymentConfirmedNotification extends Notification implements ShouldQueue
     ) {}
 
     /**
-     * Get the notification's delivery channels.
-     *
-     * @return array<int, string>
+     * Get the notification type.
      */
-    public function via(object $notifiable): array
+    public function getType(): NotificationType
     {
-        return ['mail', 'database'];
+        return NotificationType::PAYMENT_CONFIRMED;
     }
 
     /**
@@ -63,7 +61,7 @@ class PaymentConfirmedNotification extends Notification implements ShouldQueue
             'month' => $this->payment->month,
             'year' => $this->payment->year,
             'message' => 'Your payment has been verified and confirmed.',
-            'type' => 'payment_confirmed',
+            'type' => $this->getType()->value,
         ];
     }
 }

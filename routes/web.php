@@ -4,6 +4,7 @@ use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\SystemSettingsController;
 use App\Http\Controllers\Member\DependentController;
 use App\Http\Controllers\Member\MemberController;
+use App\Http\Controllers\NotificationPreferenceController;
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Payment\PaymentGatewayController;
 use App\Http\Controllers\ProfileController;
@@ -27,6 +28,21 @@ Route::middleware('auth')->group(function () {
 Route::get('/locale', function () {
     return 'Current locale: '.app()->getLocale();
 });
+
+// Language switch route
+Route::get('/language/{locale}', function ($locale) {
+    if (!in_array($locale, ['en', 'ms'])) {
+        abort(400);
+    }
+
+    session()->put('language', $locale);
+
+    if (\Illuminate\Support\Facades\Auth::check()) {
+        \Illuminate\Support\Facades\Auth::user()->update(['language' => $locale]);
+    }
+
+    return redirect()->back();
+})->name('language.switch');
 
 // Member Routes
 Route::middleware(['auth', 'verified'])->prefix('member')->name('member.')->group(function () {
@@ -90,10 +106,25 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/settings/{key}', [SystemSettingsController::class, 'update'])->name('settings.update');
     Route::post('/settings/bulk-update', [SystemSettingsController::class, 'bulkUpdate'])->name('settings.bulk-update');
 
-    Route::get('/reports', [AdminController::class, 'reports'])->name('reports');
+    // Reports Routes
+    Route::get('/reports', [App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports');
+    Route::get('/reports/payment-summary', [App\Http\Controllers\Admin\ReportController::class, 'paymentSummary'])->name('reports.payment-summary');
+    Route::get('/reports/member-statistics', [App\Http\Controllers\Admin\ReportController::class, 'memberStatistics'])->name('reports.member-statistics');
+    Route::get('/reports/payment-history', [App\Http\Controllers\Admin\ReportController::class, 'paymentHistory'])->name('reports.payment-history');
+
     Route::get('/payment-verification', function () {
         return view('admin.payment-verification');
     })->name('payment-verification');
+});
+
+// Notification Routes
+Route::middleware(['auth'])->prefix('notifications')->name('notifications.')->group(function () {
+    Route::get('/preferences', [NotificationPreferenceController::class, 'index'])->name('preferences');
+    Route::get('/history', [NotificationPreferenceController::class, 'history'])->name('history');
+    Route::post('/mark-read/{id}', [NotificationPreferenceController::class, 'markAsRead'])->name('mark-read');
+    Route::post('/mark-all-read', [NotificationPreferenceController::class, 'markAllAsRead'])->name('mark-all-read');
+    Route::delete('/delete/{id}', [NotificationPreferenceController::class, 'delete'])->name('delete');
+    Route::delete('/delete-all', [NotificationPreferenceController::class, 'deleteAll'])->name('delete-all');
 });
 
 require __DIR__.'/auth.php';
